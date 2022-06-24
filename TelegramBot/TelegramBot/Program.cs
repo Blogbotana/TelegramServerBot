@@ -12,7 +12,7 @@ namespace TelegramBot
     {
         static void Main()
         {
-            TGBot bot = new TGBot();
+            TGBot bot = TGBot.MyBot;
             bot.Launch();
             Console.ReadLine();
         }
