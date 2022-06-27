@@ -75,11 +75,18 @@ namespace TelegramBot
             {
                 return await CloseSupport(message);
             }
+            if (message.Text.ToLower().StartsWith("/send"))//TODO обработать ответ от пользователя, которому нельзя пересылать сообщения
+            {
+                return null;
+            }
             else
             {
-                return await TGBot.MyBot.BotClient.SendTextMessageAsync(message.ReplyToMessage.ForwardFrom.Id, message.Text);
+                if (message.ReplyToMessage.ForwardFrom == null)//TODO сделать чтобы работало с контентом типа картинок и стикеров
+                    return await TGBot.MyBot.BotClient.SendTextMessageAsync(message.From.Id, "Ошибка произошла");
+                else
+                    return await TGBot.MyBot.BotClient.SendTextMessageAsync(message.ReplyToMessage.ForwardFrom.Id, message.Text);
             }
-                
+
         }
 
         public async Task<Message> CloseSupport(Message message)
@@ -87,16 +94,16 @@ namespace TelegramBot
             long chatId = 0;
             TGBot.MyBot.IsGetMessagesAsSupport = false;
 
-            if(message.ReplyToMessage != null)
-            {
-                chatId = message.ReplyToMessage.ForwardFrom.Id;
-            }
-            else
+            //if(message.ReplyToMessage != null)
+            //{
+            //    chatId = message.ReplyToMessage.ForwardFrom.Id;
+            //}
+            //else
                 chatId = message.Chat.Id;
 
             foreach (long chatIdAdmin in AdminID)
             {
-                string adminmsg = "Обращение закрыто для" + chatId;
+                string adminmsg = "Обращение закрыто для " + chatId;
                 await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId: chatIdAdmin, text: adminmsg, entities: GetMessageEntity(adminmsg),
                     cancellationToken: TGBot.MyBot.CancellToken);
             }

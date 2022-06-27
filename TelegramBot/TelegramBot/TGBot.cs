@@ -9,16 +9,16 @@ namespace TelegramBot
 {
     public class TGBot
     {
-        public TelegramBotClient BotClient { get; } = new TelegramBotClient("");
+        public TelegramBotClient BotClient { get; } = new TelegramBotClient(System.IO.File.ReadAllText("token.txt"));
         public CancellationToken CancellToken { get; } = new CancellationToken();
         private LanguageFunction languageFunction = new LanguageFunction();
         private CallbackHandler callbackHandler = new CallbackHandler();
         private SupportFunction supportFunction = new SupportFunction();
         private static TGBot? _myBot;
 
-        public bool IsGetMessagesAsSupport { get; set; }
+        public bool IsGetMessagesAsSupport { get; set; }//TODO сделать dict
 
-        public Message LastMessageFromBot { get; set; }
+        public Dictionary<long, Message> LastMessageFromBot { get; set; } = new Dictionary<long, Message>();
 
         private TGBot()
         {
@@ -56,6 +56,10 @@ namespace TelegramBot
 
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
+            if(update.Message != null)
+            if(!LastMessageFromBot.ContainsKey(update.Message.From.Id))
+                LastMessageFromBot.Add(update.Message.Chat.Id, null);
+
             Task? handler = update.Type switch
             {
                 // UpdateType.Unknown:
@@ -102,7 +106,7 @@ namespace TelegramBot
         {
             if(message.ReplyToMessage != null && IsGetMessagesAsSupport && supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id))
             {
-                LastMessageFromBot = await supportFunction.ReplyToUserTheAnswerFromSupport(message);
+                LastMessageFromBot[message.From.Id] = await supportFunction.ReplyToUserTheAnswerFromSupport(message);
             }
 
 
@@ -110,12 +114,12 @@ namespace TelegramBot
             {
                 case "/start":
                     {
-                        LastMessageFromBot = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
+                        LastMessageFromBot[message.From.Id] = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
                         break;
                     }
                 case "/language":
                     {
-                        LastMessageFromBot = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
+                        LastMessageFromBot[message.From.Id] = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
                         break;
                     }
                 case "/help":
@@ -143,9 +147,9 @@ namespace TelegramBot
             };
         }
 
-        private async Task BotOnCallbackQueryReceived(Update query)
+        private async Task BotOnCallbackQueryReceived(Update update)
         {
-            await callbackHandler.CallbackQueryReceived(query.CallbackQuery!, LastMessageFromBot);
+            await callbackHandler.CallbackQueryReceived(update.CallbackQuery!, LastMessageFromBot[update.CallbackQuery.From.Id]);
         }
 
         private async Task BotOnInlineQueryReceived(InlineQuery query)

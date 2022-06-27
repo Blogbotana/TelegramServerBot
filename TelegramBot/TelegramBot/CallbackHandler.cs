@@ -18,7 +18,7 @@ namespace TelegramBot
                 case string language when language.StartsWith("Lang_"):
                     {
                         await TGBot.MyBot.BotClient.DeleteMessageAsync(query.From.Id, lastmessage.MessageId, TGBot.MyBot.CancellToken);
-                        TGBot.MyBot.LastMessageFromBot = await dialog.SendHelloMessage(query.From.Id);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.SendHelloMessage(query.From.Id);
                         //TODO Сделать запись в данных что пользователь хочет этот язык
                         break;
                     }
@@ -60,17 +60,17 @@ namespace TelegramBot
                 case string result when result == enum1 + "Support":
                     {
                         //await TGBot.MyBot.BotClient.DeleteMessageAsync(query.From.Id, lastmessage.MessageId, TGBot.MyBot.CancellToket);
-                        TGBot.MyBot.LastMessageFromBot = await support.EditSupportMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await support.EditSupportMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 case string result when result == enum1 + "DataBase":
                     {
-                        TGBot.MyBot.LastMessageFromBot = await dialog.EditCustomMessage(query.From.Id, lastmessage.MessageId, "Раздел в разработке");
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditCustomMessage(query.From.Id, lastmessage.MessageId, "Раздел в разработке");
                         break;
                     }
                 case string result when result == enum1 + "UserButtonsBuyLicenseMenu":
                     {
-                        TGBot.MyBot.LastMessageFromBot = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 default:
@@ -85,22 +85,22 @@ namespace TelegramBot
             {
                 case string data when data == enum1 + "TeklaStructures":
                     {
-                        TGBot.MyBot.LastMessageFromBot = await dialog.EditBuyTeklaLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyTeklaLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 case string data when data == enum1 + "Revit":
                     {
-                        TGBot.MyBot.LastMessageFromBot = await dialog.EditBuyRevitLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyRevitLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 case string data when data == enum1 + "Navis":
                     {
-                        TGBot.MyBot.LastMessageFromBot = await dialog.EditBuyNavisLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyNavisLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 case string data when data == enum1 + "Back":
                     {
-                        TGBot.MyBot.LastMessageFromBot = await dialog.EditHelloMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditHelloMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 default:
@@ -120,7 +120,7 @@ namespace TelegramBot
                     }
                 case string data when data == enum1 + "SteelSpecification":
                     {
-                        TGBot.MyBot.LastMessageFromBot = await dialog.EditBuySpecification(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuySpecification(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 case string data when data == enum1 + "ExcelReportGenerator":
@@ -130,7 +130,7 @@ namespace TelegramBot
                     }
                 case string data when data == enum1 + "Back":
                     {
-                        TGBot.MyBot.LastMessageFromBot = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 default:
@@ -145,7 +145,7 @@ namespace TelegramBot
             {
                 case string data when data == enum1 + "Back":
                     {
-                        TGBot.MyBot.LastMessageFromBot = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 default:
@@ -160,7 +160,7 @@ namespace TelegramBot
             {
                 case string data when data == enum1 + "Back":
                     {
-                        TGBot.MyBot.LastMessageFromBot = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 default:
@@ -170,7 +170,7 @@ namespace TelegramBot
 
         private async Task ReplyToUserBuySpecification(CallbackQuery query, Message lastmessage, string button)
         {
-            TGBot.MyBot.LastMessageFromBot = await dialog.EditBuySpecification(query.From.Id, lastmessage.MessageId);
+            TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuySpecification(query.From.Id, lastmessage.MessageId);
         }
     }
 }
