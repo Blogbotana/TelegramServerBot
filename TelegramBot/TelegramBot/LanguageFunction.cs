@@ -9,18 +9,31 @@ namespace TelegramBot
 {
     public class LanguageFunction
     {
-        public async Task SendLanguageMessageToUser(ChatId chatid)
+        public async Task<Message> SendLanguageMessageToUser(ChatId chatid)
         {
-            await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId: chatid, text: "👋 Please, select your language.",
+            return await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId: chatid, text: "👋 Please, select your language.",
                 replyMarkup: GetButtonsLanguage(),
-                            cancellationToken: TGBot.MyBot.CancellToket);
+                            cancellationToken: TGBot.MyBot.CancellToken);
         }
 
         private IReplyMarkup GetButtonsLanguage()
         {
-            List<InlineKeyboardButton> buttons = new List<InlineKeyboardButton>()
+            var buttons = new[]
             {
-                InlineKeyboardButton.WithCallbackData("Русский", "Rus") , InlineKeyboardButton.WithCallbackData("English", "Eng")
+                new []{InlineKeyboardButton.WithCallbackData("Русский", "Lang_Rus") } ,
+                new []{InlineKeyboardButton.WithCallbackData("English", "Lang_Enu") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Dutch", "Lang_Nld") },
+                new []{InlineKeyboardButton.WithCallbackData("Français", "Lang_Fra") },
+                new []{InlineKeyboardButton.WithCallbackData("Deutsch", "Lang_Deu") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Italiano", "Lang_Ita") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Español", "Lang_Esp") } ,
+                new []{InlineKeyboardButton.WithCallbackData("日本語", "Lang_Jpn") },
+                new []{InlineKeyboardButton.WithCallbackData("简体中文", "Lang_Chs") } ,
+                new []{InlineKeyboardButton.WithCallbackData("中国传统", "Lang_Cht") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Čeština", "Lang_Csy") },
+                new []{InlineKeyboardButton.WithCallbackData("Português", "Lang_Ptb") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Magyar", "Lang_Hun") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Polskie", "Lang_Plk") }
             };
 
             return new InlineKeyboardMarkup(buttons);

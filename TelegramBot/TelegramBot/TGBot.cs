@@ -10,14 +10,20 @@ namespace TelegramBot
     public class TGBot
     {
         public TelegramBotClient BotClient { get; } = new TelegramBotClient("5470325866:AAGNFZWfs8PxsSjDudFW_x_QGoReSIoPPOc");
-        public CancellationToken CancellToket { get; } = new CancellationToken();
+        public CancellationToken CancellToken { get; } = new CancellationToken();
         private LanguageFunction languageFunction = new LanguageFunction();
         private CallbackHandler callbackHandler = new CallbackHandler();
+        //private DialogFunction dialogFunction = new DialogFunction();
+        private SupportFunction supportFunction = new SupportFunction();
         private static TGBot? _myBot;
+
+        public bool IsGetMessagesAsSupport { get; set; }
+
+        public Message LastMessageFromBot { get; set; }
 
         private TGBot()
         {
-
+            IsGetMessagesAsSupport = false;
         }
 
         public static TGBot MyBot 
@@ -39,9 +45,9 @@ namespace TelegramBot
                 AllowedUpdates = Array.Empty<UpdateType>() // receive all update types
             };
 
-            BotClient.StartReceiving(HandleUpdateAsync, HandlePollingErrorAsync, receiverOptions, CancellToket);
+            BotClient.StartReceiving(HandleUpdateAsync, HandlePollingErrorAsync, receiverOptions, CancellToken);
 
-            BotClient.SetMyCommandsAsync(GetBotsCommands(), scope: new BotCommandScopeDefault(), cancellationToken: CancellToket);
+            BotClient.SetMyCommandsAsync(GetBotsCommands(), scope: new BotCommandScopeDefault(), cancellationToken: CancellToken);
 
             
 
@@ -55,7 +61,7 @@ namespace TelegramBot
 
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            var handler = update.Type switch
+            Task? handler = update.Type switch
             {
                 // UpdateType.Unknown:
                 // UpdateType.ChannelPost:
@@ -65,7 +71,7 @@ namespace TelegramBot
                 // UpdateType.Poll:
                 UpdateType.Message => BotOnMessageReceived(update.Message!),
                 UpdateType.EditedMessage => BotOnMessageReceived(update.EditedMessage!),
-                UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update.CallbackQuery!),
+                UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update),
                 UpdateType.InlineQuery => BotOnInlineQueryReceived(update.InlineQuery!),
                 UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceived(update.ChosenInlineResult!),
                 _ => null
@@ -108,16 +114,22 @@ namespace TelegramBot
 
         private async Task BotOnMessageReceived(Message message)
         {
-            
+            if(message.ReplyToMessage != null && IsGetMessagesAsSupport && supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id))
+            {
+                LastMessageFromBot = await supportFunction.ReplyToUserTheAnswerFromSupport(message);
+            }
+
+
             switch (message.Text)
             {
                 case "/start":
                     {
-                        await languageFunction.SendLanguageMessageToUser(message.Chat.Id);  
+                        LastMessageFromBot = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
                         break;
                     }
                 case "/language":
                     {
+                        LastMessageFromBot = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
                         break;
                     }
                 case "/help":
@@ -125,31 +137,29 @@ namespace TelegramBot
                         break;
                     }
                 default:
+                    {
+                        if(IsGetMessagesAsSupport)
+                        {
+                            supportFunction.SupportMessageToAdmin(message);
+                        }
+                    }
                     break;
             }
         }
-
-        async Task SendTextMessageToUser(ChatId chatid, string Text)
-        {
-            await BotClient.SendTextMessageAsync(chatId: chatid,
-                              text: Text,
-                              cancellationToken: CancellToket);
-        }
-
-
 
         private IEnumerable<BotCommand> GetBotsCommands()
         {
             return new List<BotCommand>()
             {
                 new BotCommand() { Command = "/help" , Description = "Getting help from bot"},
-                new BotCommand() { Command = "/language", Description = "Set the language again"}
+                new BotCommand() { Command = "/language", Description = "Set the language again"},
+                new BotCommand() { Command = "/home", Description = "Go to home page"}
             };
         }
 
-        private async Task BotOnCallbackQueryReceived(CallbackQuery query)
+        private async Task BotOnCallbackQueryReceived(Update query)
         {
-            await callbackHandler.CallbackQueryReceived(query);
+            await callbackHandler.CallbackQueryReceived(query.CallbackQuery!, LastMessageFromBot);
         }
 
         private async Task BotOnInlineQueryReceived(InlineQuery query)
@@ -161,5 +171,7 @@ namespace TelegramBot
         {
 
         }
+
+    
     }
 }
