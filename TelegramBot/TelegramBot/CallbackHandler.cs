@@ -17,10 +17,6 @@ namespace TelegramBot
             {
                 case string language when language.StartsWith("Lang_"):
                     {
-                        //string langresponse = GetLanguge(language);
-
-         //               await TGBot.MyBot.BotClient.AnswerCallbackQueryAsync(callbackQueryId: query.Id,
-         //text: $"Вы установили язык" + langresponse);
                         await TGBot.MyBot.BotClient.DeleteMessageAsync(query.From.Id, lastmessage.MessageId, TGBot.MyBot.CancellToken);
                         TGBot.MyBot.LastMessageFromBot = await dialog.SendHelloMessage(query.From.Id);
                         //TODO Сделать запись в данных что пользователь хочет этот язык
@@ -119,7 +115,7 @@ namespace TelegramBot
             {
                 case string data when data == enum1 + "ProfileChooser":
                     {
-                        //TGBot.MyBot.LastMessageFromBot = await dialog.EditBuySpecification(query.From.Id, lastmessage.MessageId);
+
                         break;
                     }
                 case string data when data == enum1 + "SteelSpecification":
@@ -129,7 +125,7 @@ namespace TelegramBot
                     }
                 case string data when data == enum1 + "ExcelReportGenerator":
                     {
-                        //TGBot.MyBot.LastMessageFromBot = await dialog.EditBuyTeklaLicenseMessage(query.From.Id, lastmessage.MessageId);
+
                         break;
                     }
                 case string data when data == enum1 + "Back":
@@ -176,72 +172,5 @@ namespace TelegramBot
         {
             TGBot.MyBot.LastMessageFromBot = await dialog.EditBuySpecification(query.From.Id, lastmessage.MessageId);
         }
-
-        private string GetLanguge(string query)
-        {
-            switch (query)
-            {
-                case "Lang_Rus":
-                    {
-                        return "Русский";
-                    }
-                case "Lang_Enu":
-                    {
-                        return "Английский";
-                    }
-                case "Lang_Nld":
-                    {
-                        return "Dutch";
-                    }
-                case "Lang_Fra":
-                    {
-                        return "Français";
-                    }
-                case "Lang_Deu":
-                    {
-                        return "Deutsch";
-                    }
-                case "Lang_Ita":
-                    {
-                        return "Italiano";
-                    }
-                case "Lang_Esp":
-                    {
-                        return "Español";
-                    }
-                case "Lang_Jpn":
-                    {
-                        return "日本語";
-                    }
-                case "Lang_Chs":
-                    {
-                        return "简体中文";
-                    }
-                case "Lang_Cht":
-                    {
-                        return "中国传统";
-                    }
-                case "Lang_Csy":
-                    {
-                        return "Čeština";
-                    }
-                case "Lang_Ptb":
-                    {
-                        return "Português";
-                    }
-                case "Lang_Hun":
-                    {
-                        return "Magyar";
-                    }
-                case "Lang_Plk":
-                    {
-                        return "Polskie";
-                    }
-                default:
-                    return "Английский";
-            }
-        }
-
-
     }
 }

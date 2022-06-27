@@ -9,11 +9,10 @@ namespace TelegramBot
 {
     public class TGBot
     {
-        public TelegramBotClient BotClient { get; } = new TelegramBotClient("5470325866:AAGNFZWfs8PxsSjDudFW_x_QGoReSIoPPOc");
+        public TelegramBotClient BotClient { get; } = new TelegramBotClient("");
         public CancellationToken CancellToken { get; } = new CancellationToken();
         private LanguageFunction languageFunction = new LanguageFunction();
         private CallbackHandler callbackHandler = new CallbackHandler();
-        //private DialogFunction dialogFunction = new DialogFunction();
         private SupportFunction supportFunction = new SupportFunction();
         private static TGBot? _myBot;
 
@@ -52,11 +51,7 @@ namespace TelegramBot
             
 
             var me = BotClient.GetMeAsync().Result;
-            //Как делать кнопки для бота, набор команд. Сделать просто диалог, 
             Console.WriteLine($"Start listening for @{me.Username}");
-
-
-            
         }
 
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -75,7 +70,6 @@ namespace TelegramBot
                 UpdateType.InlineQuery => BotOnInlineQueryReceived(update.InlineQuery!),
                 UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceived(update.ChosenInlineResult!),
                 _ => null
-                //_ => UnknownUpdateHandlerAsync(botClient, update)
             };
 
             try
@@ -89,14 +83,6 @@ namespace TelegramBot
                 await HandlePollingErrorAsync(botClient, exception, cancellationToken);
             }
             // Only process Message updates: https://core.telegram.org/bots/api#message
-            //if (update.Type != UpdateType.Message)
-            //    return;
-            //// Only process text messages
-            //if (update.Message!.Type != MessageType.Text)
-            //    return;
-
-            //var chatId = update.Message.Chat.Id;
-            //var messageText = update.Message.Text;
         }
 
         Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
