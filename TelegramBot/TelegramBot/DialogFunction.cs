@@ -99,17 +99,16 @@ namespace TelegramBot
 
         private InlineKeyboardMarkup GetButtonsBuyLicensePrograms()
         {
-            string enum1 = "UserButtonsBuyLicenseMenu.";
             var buttons = new[]
             {
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Tekla Structures"), 
-                enum1 + UserButtonsBuyLicenseMenu.TeklaStructures.ToString()) } ,
+                UserButtonsBuyLicenseMenu.TeklaStructures.GetType().ToString()) } ,
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Autodesk Revit"), 
-                enum1 + UserButtonsBuyLicenseMenu.Revit.ToString()) } ,
+                UserButtonsBuyLicenseMenu.Revit.GetType().ToString()) } ,
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("AutoDesk Navis"), 
-                enum1 + UserButtonsBuyLicenseMenu.Navis.ToString()) },
+                UserButtonsBuyLicenseMenu.Navis.GetType().ToString()) },
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("<<Назад"),
-                enum1 + UserButtonsBuyLicenseMenu.Back) },
+                UserButtonsBuyLicenseMenu.Back.GetType().ToString()) },
             };
 
             return new InlineKeyboardMarkup(buttons);

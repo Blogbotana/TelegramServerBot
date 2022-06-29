@@ -56,18 +56,12 @@ namespace TelegramBot
 
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            if(update.Message != null)
-            if(!LastMessageFromBot.ContainsKey(update.Message.From.Id))
-                LastMessageFromBot.Add(update.Message.Chat.Id, null);
+            if (update.Message != null)
+                if (!LastMessageFromBot.ContainsKey(update.Message.From.Id))
+                    LastMessageFromBot.Add(update.Message.Chat.Id, null);
 
             Task? handler = update.Type switch
             {
-                // UpdateType.Unknown:
-                // UpdateType.ChannelPost:
-                // UpdateType.EditedChannelPost:
-                // UpdateType.ShippingQuery:
-                // UpdateType.PreCheckoutQuery:
-                // UpdateType.Poll:
                 UpdateType.Message => BotOnMessageReceived(update.Message!),
                 UpdateType.EditedMessage => BotOnMessageReceived(update.EditedMessage!),
                 UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update),
