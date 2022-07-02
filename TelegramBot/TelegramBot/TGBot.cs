@@ -13,16 +13,17 @@ namespace TelegramBot
         public CancellationToken CancellToken { get; } = new CancellationToken();
         private LanguageFunction languageFunction = new LanguageFunction();
         private CallbackHandler callbackHandler = new CallbackHandler();
+        private DialogFunction dialogFunction = new DialogFunction();
         private SupportFunction supportFunction = new SupportFunction();
         private static TGBot? _myBot;
 
-        public bool IsGetMessagesAsSupport { get; set; }//TODO сделать dict
+        public Dictionary<long, bool> IsGetMessagesAsSupport { get; set; } = new Dictionary<long, bool>();
 
         public Dictionary<long, Message> LastMessageFromBot { get; set; } = new Dictionary<long, Message>();
 
         private TGBot()
         {
-            IsGetMessagesAsSupport = false;
+
         }
 
         public static TGBot MyBot 
@@ -57,8 +58,13 @@ namespace TelegramBot
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             if (update.Message != null)
+            {
                 if (!LastMessageFromBot.ContainsKey(update.Message.From.Id))
                     LastMessageFromBot.Add(update.Message.Chat.Id, null);
+
+                if (!IsGetMessagesAsSupport.ContainsKey(update.Message.From.Id))
+                    IsGetMessagesAsSupport.Add(update.Message.Chat.Id, false);
+            }
 
             Task? handler = update.Type switch
             {
@@ -98,9 +104,9 @@ namespace TelegramBot
 
         private async Task BotOnMessageReceived(Message message)
         {
-            if(message.ReplyToMessage != null && IsGetMessagesAsSupport && supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id))
+            if(message.ReplyToMessage != null && IsGetMessagesAsSupport[message.ReplyToMessage.Chat.Id] && supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id))
             {
-                LastMessageFromBot[message.From.Id] = await supportFunction.ReplyToUserTheAnswerFromSupport(message);
+                await supportFunction.ReplyToUserTheAnswerFromSupport(message);
             }
 
 
@@ -108,21 +114,30 @@ namespace TelegramBot
             {
                 case "/start":
                     {
+                        IsGetMessagesAsSupport[message.From.Id] = false;
                         LastMessageFromBot[message.From.Id] = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
                         break;
                     }
                 case "/language":
                     {
+                        IsGetMessagesAsSupport[message.From.Id] = false;
                         LastMessageFromBot[message.From.Id] = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
                         break;
                     }
                 case "/help":
                     {
+                        IsGetMessagesAsSupport[message.From.Id] = false;
+                        break;
+                    }
+                case "/home":
+                    {
+                        IsGetMessagesAsSupport[message.From.Id] = false;
+                        LastMessageFromBot[message.From.Id] = await dialogFunction.SendHelloMessage(message.Chat.Id);
                         break;
                     }
                 default:
                     {
-                        if(IsGetMessagesAsSupport)
+                        if (IsGetMessagesAsSupport[message.From.Id])
                         {
                             supportFunction.SupportMessageToAdmin(message);
                         }

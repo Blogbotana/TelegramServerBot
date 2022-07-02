@@ -79,24 +79,25 @@ namespace TelegramBot
 
         private async Task ReplyToUserButtonsBuyLicenseMenu(CallbackQuery query, Message lastmessage, string button)
         {
+            var thisenum = typeof(UserButtonsBuyLicenseMenu).Name + ".";
             switch (button)
             {
-                case string data when data == UserButtonsBuyLicenseMenu.TeklaStructures.GetType().ToString():
+                case string data when data == thisenum + UserButtonsBuyLicenseMenu.TeklaStructures.ToString():
                     {
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyTeklaLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
-                case string data when data == UserButtonsBuyLicenseMenu.Revit.GetType().ToString():
+                case string data when data == thisenum + UserButtonsBuyLicenseMenu.Revit.ToString():
                     {
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyRevitLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
-                case string data when data == UserButtonsBuyLicenseMenu.Navis.GetType().ToString():
+                case string data when data == thisenum + UserButtonsBuyLicenseMenu.Navis.ToString():
                     {
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyNavisLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
-                case string data when data == UserButtonsBuyLicenseMenu.Back.GetType().ToString():
+                case string data when data == thisenum + UserButtonsBuyLicenseMenu.Back.ToString():
                     {
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditHelloMessage(query.From.Id, lastmessage.MessageId);
                         break;
@@ -108,24 +109,25 @@ namespace TelegramBot
 
         private async Task ReplyToUserBuyTeklaLicense(CallbackQuery query, Message lastmessage, string button)
         {
+            var thisenum = typeof(UserButtonsTeklaMenu).Name + ".";
             switch (button)
             {
-                case string data when data == UserButtonsTeklaMenu.ProfileChooser.GetType().ToString():
+                case string data when data == thisenum + UserButtonsTeklaMenu.ProfileChooser.ToString():
                     {
 
                         break;
                     }
-                case string data when data == UserButtonsTeklaMenu.SteelSpecification.GetType().ToString():
+                case string data when data == thisenum + UserButtonsTeklaMenu.SteelSpecification.ToString():
                     {
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuySpecification(query.From.Id, lastmessage.MessageId);
                         break;
                     }
-                case string data when data == UserButtonsTeklaMenu.ExcelReportGenerator.GetType().ToString():
+                case string data when data == thisenum + UserButtonsTeklaMenu.ExcelReportGenerator.ToString():
                     {
 
                         break;
                     }
-                case string data when data == UserButtonsTeklaMenu.Back.GetType().ToString():
+                case string data when data == thisenum + UserButtonsTeklaMenu.Back.ToString():
                     {
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
@@ -137,9 +139,10 @@ namespace TelegramBot
 
         private async Task ReplyToUserBuyRevitLicense(CallbackQuery query, Message lastmessage, string button)
         {
+            var thisenum = typeof(UserButtonsRevitMenu).Name + ".";
             switch (button)
             {
-                case string data when data == UserButtonsRevitMenu.Back.GetType().ToString():
+                case string data when data == thisenum + UserButtonsRevitMenu.Back.ToString():
                     {
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
@@ -151,9 +154,10 @@ namespace TelegramBot
 
         private async Task ReplyToUserBuyNavisLicense(CallbackQuery query, Message lastmessage, string button)
         {
+            var thisenum = typeof(UserButtonsNavisMenu).Name + ".";
             switch (button)
             {
-                case string data when data == UserButtonsNavisMenu.Back.GetType().ToString():
+                case string data when data == thisenum + UserButtonsNavisMenu.Back.ToString():
                     {
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
@@ -163,7 +167,7 @@ namespace TelegramBot
             }
         }
 
-        private async Task ReplyToUserBuySpecification(CallbackQuery query, Message lastmessage, string button)
+        private async Task ReplyToUserBuySpecification(CallbackQuery query, Message lastmessage)
         {
             TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuySpecification(query.From.Id, lastmessage.MessageId);
         }

@@ -18,7 +18,7 @@ namespace TelegramBot
 
         private IReplyMarkup GetButtonsLanguage()
         {
-            var buttons = new[]
+            var buttons = new[]//TODO исправить языки
             {
                 new []{InlineKeyboardButton.WithCallbackData("Русский", "Lang_Rus") } ,
                 new []{InlineKeyboardButton.WithCallbackData("English", "Lang_Enu") } ,

@@ -83,15 +83,15 @@ namespace TelegramBot
 
         private InlineKeyboardMarkup GetButtonsMainMenu()
         {
-            string enum1 = "UserButtonsMainMenu.";
+            string thisenum = typeof(UserButtonsMainMenu).Name + ".";
             var buttons = new[]
             {
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("База данных узлов"),
-                enum1 + UserButtonsMainMenu.DataBase.ToString()) } ,
+                thisenum + UserButtonsMainMenu.DataBase.ToString()) } ,
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Техническая поддержка"),
-                enum1+ UserButtonsMainMenu.Support.ToString()) } ,
+                thisenum+ UserButtonsMainMenu.Support.ToString()) } ,
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Купить лицензию"),
-                enum1+ UserButtonsMainMenu.UserButtonsBuyLicenseMenu.ToString()) },
+                thisenum+ UserButtonsMainMenu.UserButtonsBuyLicenseMenu.ToString()) },
             };
 
             return new InlineKeyboardMarkup(buttons);
@@ -99,16 +99,17 @@ namespace TelegramBot
 
         private InlineKeyboardMarkup GetButtonsBuyLicensePrograms()
         {
+            string thisenum = typeof(UserButtonsBuyLicenseMenu).Name + ".";
             var buttons = new[]
             {
-                new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Tekla Structures"), 
-                UserButtonsBuyLicenseMenu.TeklaStructures.GetType().ToString()) } ,
-                new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Autodesk Revit"), 
-                UserButtonsBuyLicenseMenu.Revit.GetType().ToString()) } ,
-                new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("AutoDesk Navis"), 
-                UserButtonsBuyLicenseMenu.Navis.GetType().ToString()) },
+                new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Tekla Structures"),
+                thisenum + UserButtonsBuyLicenseMenu.TeklaStructures.ToString()) } ,
+                new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Autodesk Revit"),
+                thisenum + UserButtonsBuyLicenseMenu.Revit.ToString()) } ,
+                new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("AutoDesk Navis"),
+                thisenum + UserButtonsBuyLicenseMenu.Navis.ToString()) },
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("<<Назад"),
-                UserButtonsBuyLicenseMenu.Back.GetType().ToString()) },
+                thisenum + UserButtonsBuyLicenseMenu.Back.ToString()) },
             };
 
             return new InlineKeyboardMarkup(buttons);
@@ -116,17 +117,17 @@ namespace TelegramBot
 
         private InlineKeyboardMarkup GetButtonsBuyTeklaLicensePrograms()
         {
-            string enum1 = "UserButtonsTeklaMenu.";
+            string thisenum = typeof(UserButtonsTeklaMenu).Name + ".";
             var buttons = new[]
             {
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Profile Chooser"),
-                enum1 + UserButtonsTeklaMenu.ProfileChooser.ToString()) } ,
+                thisenum + UserButtonsTeklaMenu.ProfileChooser.ToString()) } ,
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Specifications"),
-                enum1 + UserButtonsTeklaMenu.SteelSpecification.ToString()) } ,
+                thisenum + UserButtonsTeklaMenu.SteelSpecification.ToString()) } ,
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("Excel Report Generator"),
-                enum1 + UserButtonsTeklaMenu.ExcelReportGenerator.ToString()) },
+                thisenum + UserButtonsTeklaMenu.ExcelReportGenerator.ToString()) },
                   new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("<<Назад"),
-                enum1 + UserButtonsTeklaMenu.Back.ToString()) },
+                thisenum + UserButtonsTeklaMenu.Back.ToString()) },
             };
 
             return new InlineKeyboardMarkup(buttons);
@@ -134,11 +135,11 @@ namespace TelegramBot
 
         private InlineKeyboardMarkup GetButtonsBuyNavisLicenseProgram()
         {
-            string enum1 = "UserButtonsNavisMenu.";
+            string thisenum = typeof(UserButtonsNavisMenu).Name + ".";
             var buttons = new[]
             {
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("<<Назад"),
-                enum1 + UserButtonsNavisMenu.Back.ToString()) } ,
+                thisenum + UserButtonsNavisMenu.Back.ToString()) } ,
             };
 
             return new InlineKeyboardMarkup(buttons);
@@ -146,11 +147,11 @@ namespace TelegramBot
 
         private InlineKeyboardMarkup GetButtonsBuyRevitLicenseProgram()
         {
-            string enum1 = "UserButtonsRevitMenu.";
+            string thisenum = typeof(UserButtonsRevitMenu).Name + ".";
             var buttons = new[]
             {
                 new []{InlineKeyboardButton.WithCallbackData(Localization.GetTranslation("<<Назад"),
-                enum1 + UserButtonsRevitMenu.Back.ToString()) } ,
+                thisenum + UserButtonsRevitMenu.Back.ToString()) } ,
             };
 
             return new InlineKeyboardMarkup(buttons);
@@ -160,7 +161,7 @@ namespace TelegramBot
         {
             InlineKeyboardButton button = new InlineKeyboardButton("Pay 50$");
             button.Pay = true;
-            button.CallbackData = "Pay";
+            button.CallbackData = "381764678:TEST:39124";
 
             return new InlineKeyboardMarkup(new InlineKeyboardButton[] { button });
         }

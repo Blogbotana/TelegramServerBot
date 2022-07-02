@@ -10,7 +10,7 @@ namespace TelegramBot
     {
         public static string GetTranslation(string Text)
         {
-            return Text;//TODO сделать метод который тут берет перевод
+            return Text;//TODO сделать метод который тут берет перевод -думаю лучше будет через ресурсы попробовать
         }
 
         public static string FromTranslation(string Translation)
