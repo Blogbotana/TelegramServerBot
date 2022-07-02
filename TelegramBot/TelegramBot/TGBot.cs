@@ -3,48 +3,90 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramBot
 {
     public class TGBot
     {
-        ITelegramBotClient botClient = null;
+        public TelegramBotClient BotClient { get; } = new TelegramBotClient(System.IO.File.ReadAllText("token.txt"));
+        public CancellationToken CancellToken { get; } = new CancellationToken();
+        private LanguageFunction languageFunction = new LanguageFunction();
+        private CallbackHandler callbackHandler = new CallbackHandler();
+        private DialogFunction dialogFunction = new DialogFunction();
+        private SupportFunction supportFunction = new SupportFunction();
+        private static TGBot? _myBot;
+
+        public Dictionary<long, bool> IsGetMessagesAsSupport { get; set; } = new Dictionary<long, bool>();
+
+        public Dictionary<long, Message> LastMessageFromBot { get; set; } = new Dictionary<long, Message>();
+
+        private TGBot()
+        {
+
+        }
+
+        public static TGBot MyBot 
+        {
+            get
+            {
+                if (_myBot == null)
+                    _myBot = new TGBot();
+                return _myBot;
+            }
+            //private set { }
+        }
+
         public void Launch()
         {
-            botClient = new TelegramBotClient("5470325866:AAGNFZWfs8PxsSjDudFW_x_QGoReSIoPPOc");
-
-            var cts = new CancellationToken();
-
             // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
             var receiverOptions = new ReceiverOptions
             {
                 AllowedUpdates = Array.Empty<UpdateType>() // receive all update types
             };
 
-            botClient.StartReceiving(HandleUpdateAsync, HandlePollingErrorAsync, receiverOptions, cts);
+            BotClient.StartReceiving(HandleUpdateAsync, HandlePollingErrorAsync, receiverOptions, CancellToken);
 
-            var me = botClient.GetMeAsync().Result;
-            //Как делать кнопки для бота, набор команд. Сделать просто диалог, 
+            BotClient.SetMyCommandsAsync(GetBotsCommands(), scope: new BotCommandScopeDefault(), cancellationToken: CancellToken);
+
+            
+
+            var me = BotClient.GetMeAsync().Result;
             Console.WriteLine($"Start listening for @{me.Username}");
-
-
-            // Send cancellation request to stop bot
-            //cts.Cancel();
         }
 
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            // Only process Message updates: https://core.telegram.org/bots/api#message
-            if (update.Type != UpdateType.Message)
-                return;
-            // Only process text messages
-            if (update.Message!.Type != MessageType.Text)
-                return;
-            
-            //var chatId = update.Message.Chat.Id;
-            //var messageText = update.Message.Text;
+            if (update.Message != null)
+            {
+                if (!LastMessageFromBot.ContainsKey(update.Message.From.Id))
+                    LastMessageFromBot.Add(update.Message.Chat.Id, null);
 
-            UserSendCommand(update, cancellationToken);
+                if (!IsGetMessagesAsSupport.ContainsKey(update.Message.From.Id))
+                    IsGetMessagesAsSupport.Add(update.Message.Chat.Id, false);
+            }
+
+            Task? handler = update.Type switch
+            {
+                UpdateType.Message => BotOnMessageReceived(update.Message!),
+                UpdateType.EditedMessage => BotOnMessageReceived(update.EditedMessage!),
+                UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update),
+                UpdateType.InlineQuery => BotOnInlineQueryReceived(update.InlineQuery!),
+                UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceived(update.ChosenInlineResult!),
+                _ => null
+            };
+
+            try
+            {
+                await handler;
+            }
+#pragma warning disable CA1031
+            catch (Exception exception)
+#pragma warning restore CA1031
+            {
+                await HandlePollingErrorAsync(botClient, exception, cancellationToken);
+            }
+            // Only process Message updates: https://core.telegram.org/bots/api#message
         }
 
         Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -60,20 +102,75 @@ namespace TelegramBot
             return Task.CompletedTask;
         }
 
-        void UserSendCommand(Update update, CancellationToken cancellationToken)
+        private async Task BotOnMessageReceived(Message message)
         {
-            switch (update.Message.Text)
+            if(message.ReplyToMessage != null && IsGetMessagesAsSupport[message.ReplyToMessage.Chat.Id] && supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id))
+            {
+                await supportFunction.ReplyToUserTheAnswerFromSupport(message);
+            }
+
+
+            switch (message.Text)
             {
                 case "/start":
                     {
-                        botClient.SendTextMessageAsync(chatId: update.Message.Chat.Id, 
-                            text: "Приветственное сообщение", 
-                            cancellationToken: cancellationToken);
+                        IsGetMessagesAsSupport[message.From.Id] = false;
+                        LastMessageFromBot[message.From.Id] = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
+                        break;
+                    }
+                case "/language":
+                    {
+                        IsGetMessagesAsSupport[message.From.Id] = false;
+                        LastMessageFromBot[message.From.Id] = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
+                        break;
+                    }
+                case "/help":
+                    {
+                        IsGetMessagesAsSupport[message.From.Id] = false;
+                        break;
+                    }
+                case "/home":
+                    {
+                        IsGetMessagesAsSupport[message.From.Id] = false;
+                        LastMessageFromBot[message.From.Id] = await dialogFunction.SendHelloMessage(message.Chat.Id);
                         break;
                     }
                 default:
+                    {
+                        if (IsGetMessagesAsSupport[message.From.Id])
+                        {
+                            supportFunction.SupportMessageToAdmin(message);
+                        }
+                    }
                     break;
             }
         }
+
+        private IEnumerable<BotCommand> GetBotsCommands()
+        {
+            return new List<BotCommand>()
+            {
+                new BotCommand() { Command = "/help" , Description = "Getting help from bot"},
+                new BotCommand() { Command = "/language", Description = "Set the language again"},
+                new BotCommand() { Command = "/home", Description = "Go to home page"}
+            };
+        }
+
+        private async Task BotOnCallbackQueryReceived(Update update)
+        {
+            await callbackHandler.CallbackQueryReceived(update.CallbackQuery!, LastMessageFromBot[update.CallbackQuery.From.Id]);
+        }
+
+        private async Task BotOnInlineQueryReceived(InlineQuery query)
+        {
+
+        }
+
+        private async Task BotOnChosenInlineResultReceived(ChosenInlineResult inlineResult)
+        {
+
+        }
+
+    
     }
 }
