@@ -9,6 +9,7 @@ namespace TelegramBot
 {
     public class DialogFunction
     {
+        ShopFunctions shopFunctions = new ShopFunctions();
         public async Task<Message> SendHelloMessage(long IdChat)
         {
             return await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId: IdChat, text: Localization.GetTranslation("Привет, это бот школы инженеров, где можно задать интересующие вас вопросы и купить лицензию. Добро пожаловать"),
@@ -55,12 +56,6 @@ namespace TelegramBot
         {
             return await TGBot.MyBot.BotClient.EditMessageTextAsync(IdChat, msgId, text: Localization.GetTranslation("Раздел в разработке"),
                  replyMarkup: GetButtonsBuyRevitLicenseProgram(), cancellationToken: TGBot.MyBot.CancellToken);
-        }
-
-        public async Task<Message> EditBuySpecification(long IdChat, int msgId)
-        {
-            return await TGBot.MyBot.BotClient.EditMessageTextAsync(IdChat, msgId, text: Localization.GetTranslation("Стоимость 50$"),
-                 replyMarkup: GetButtonsBuySpecification(), cancellationToken: TGBot.MyBot.CancellToken);
         }
 
         private IReplyMarkup ShowKeyBoard()
@@ -156,15 +151,5 @@ namespace TelegramBot
 
             return new InlineKeyboardMarkup(buttons);
         }
-
-        private InlineKeyboardMarkup GetButtonsBuySpecification()
-        {
-            InlineKeyboardButton button = new InlineKeyboardButton("Pay 50$");
-            button.Pay = true;
-            button.CallbackData = "381764678:TEST:39124";
-
-            return new InlineKeyboardMarkup(new InlineKeyboardButton[] { button });
-        }
-
     }
 }
