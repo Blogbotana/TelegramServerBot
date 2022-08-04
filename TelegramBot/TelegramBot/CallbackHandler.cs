@@ -62,7 +62,7 @@ namespace TelegramBot
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await support.EditSupportMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
-                case string result when result == thisenum + UserButtonsMainMenu.DataBase.GetType().ToString():
+                case string result when result == thisenum + UserButtonsMainMenu.DataBase.ToString():
                     {
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditCustomMessage(query.From.Id, lastmessage.MessageId, "Раздел в разработке");
                         break;

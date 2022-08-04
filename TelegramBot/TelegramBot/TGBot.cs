@@ -104,7 +104,7 @@ namespace TelegramBot
 
         private async Task BotOnMessageReceived(Message message)
         {
-            if(message.ReplyToMessage != null && IsGetMessagesAsSupport[message.ReplyToMessage.Chat.Id] && supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id))
+            if(message.ReplyToMessage != null && (IsGetMessagesAsSupport[message.ReplyToMessage.Chat.Id] || supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id)))
             {
                 await supportFunction.ReplyToUserTheAnswerFromSupport(message);
             }
@@ -126,7 +126,7 @@ namespace TelegramBot
                     }
                 case "/help":
                     {
-                        IsGetMessagesAsSupport[message.From.Id] = false;
+                        LastMessageFromBot[message.From.Id] = await supportFunction.SendSupportMessage(message.From.Id);
                         break;
                     }
                 case "/home":
@@ -152,7 +152,8 @@ namespace TelegramBot
             {
                 new BotCommand() { Command = "/help" , Description = "Getting help from bot"},
                 new BotCommand() { Command = "/language", Description = "Set the language again"},
-                new BotCommand() { Command = "/home", Description = "Go to home page"}
+                new BotCommand() { Command = "/home", Description = "Go to home page"},
+                new BotCommand() { Command = "/start", Description = "Start this Bot"}
             };
         }
 
