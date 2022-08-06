@@ -103,7 +103,7 @@ namespace TelegramBot
                             enumerablesplit.RemoveAt(0);
                             enumerablesplit.RemoveAt(0);
                             message.Text = String.Join(' ', enumerablesplit);
-                            message.ReplyToMessage.ForwardFrom.Id = chatid;
+                            message.ReplyToMessage.ForwardFrom = new User() { Id = chatid};
                             return await ReplyToUserTheAnswerFromSupport(message);
                         }
                     }
