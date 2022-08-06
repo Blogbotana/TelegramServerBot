@@ -11,6 +11,7 @@ namespace TelegramBot
     {
         DialogFunction dialog = new DialogFunction();
         SupportFunction support = new SupportFunction();
+        ShopFunctions _shopFunctions = new ShopFunctions();
         public async Task CallbackQueryReceived(CallbackQuery query, Message lastmessage)
         {
             switch (query.Data)
@@ -62,7 +63,7 @@ namespace TelegramBot
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await support.EditSupportMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
-                case string result when result == thisenum + UserButtonsMainMenu.DataBase.GetType().ToString():
+                case string result when result == thisenum + UserButtonsMainMenu.DataBase.ToString():
                     {
                         TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditCustomMessage(query.From.Id, lastmessage.MessageId, "Раздел в разработке");
                         break;
@@ -119,7 +120,7 @@ namespace TelegramBot
                     }
                 case string data when data == thisenum + UserButtonsTeklaMenu.SteelSpecification.ToString():
                     {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuySpecification(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await _shopFunctions.BuyTeklaLisence(query.From.Id, UserButtonsTeklaMenu.SteelSpecification);
                         break;
                     }
                 case string data when data == thisenum + UserButtonsTeklaMenu.ExcelReportGenerator.ToString():
@@ -165,11 +166,6 @@ namespace TelegramBot
                 default:
                     break;
             }
-        }
-
-        private async Task ReplyToUserBuySpecification(CallbackQuery query, Message lastmessage)
-        {
-            TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuySpecification(query.From.Id, lastmessage.MessageId);
         }
     }
 }

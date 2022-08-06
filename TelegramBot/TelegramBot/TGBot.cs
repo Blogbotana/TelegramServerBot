@@ -2,6 +2,7 @@
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Payments;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -15,9 +16,11 @@ namespace TelegramBot
         private CallbackHandler callbackHandler = new CallbackHandler();
         private DialogFunction dialogFunction = new DialogFunction();
         private SupportFunction supportFunction = new SupportFunction();
+        private ShopFunctions shopFunctions = new ShopFunctions();
         private static TGBot? _myBot;
 
         public Dictionary<long, bool> IsGetMessagesAsSupport { get; set; } = new Dictionary<long, bool>();
+        public Dictionary<long, string> UserLanguage { get; set; } = new Dictionary<long, string>();
 
         public Dictionary<long, Message> LastMessageFromBot { get; set; } = new Dictionary<long, Message>();
 
@@ -73,6 +76,8 @@ namespace TelegramBot
                 UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update),
                 UpdateType.InlineQuery => BotOnInlineQueryReceived(update.InlineQuery!),
                 UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceived(update.ChosenInlineResult!),
+                UpdateType.PreCheckoutQuery => BotOnPreCheckoutQueryReceived(update.PreCheckoutQuery!),
+                UpdateType.ShippingQuery => BotOnShippingQueryReceived(update.ShippingQuery!),
                 _ => null
             };
 
@@ -89,7 +94,7 @@ namespace TelegramBot
             // Only process Message updates: https://core.telegram.org/bots/api#message
         }
 
-        Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+        private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             var ErrorMessage = exception switch
             {
@@ -104,7 +109,7 @@ namespace TelegramBot
 
         private async Task BotOnMessageReceived(Message message)
         {
-            if(message.ReplyToMessage != null && IsGetMessagesAsSupport[message.ReplyToMessage.Chat.Id] && supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id))
+            if(message.ReplyToMessage != null && (IsGetMessagesAsSupport[message.ReplyToMessage.Chat.Id] || supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id)))
             {
                 await supportFunction.ReplyToUserTheAnswerFromSupport(message);
             }
@@ -115,7 +120,7 @@ namespace TelegramBot
                 case "/start":
                     {
                         IsGetMessagesAsSupport[message.From.Id] = false;
-                        LastMessageFromBot[message.From.Id] = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
+                        LastMessageFromBot[message.From.Id] = await dialogFunction.SendHelloMessage(message.Chat.Id);
                         break;
                     }
                 case "/language":
@@ -126,7 +131,7 @@ namespace TelegramBot
                     }
                 case "/help":
                     {
-                        IsGetMessagesAsSupport[message.From.Id] = false;
+                        LastMessageFromBot[message.From.Id] = await supportFunction.SendSupportMessage(message.From.Id);
                         break;
                     }
                 case "/home":
@@ -139,7 +144,12 @@ namespace TelegramBot
                     {
                         if (IsGetMessagesAsSupport[message.From.Id])
                         {
-                            supportFunction.SupportMessageToAdmin(message);
+                            await supportFunction.SupportMessageToAdmin(message);
+                        }
+
+                        if(message.SuccessfulPayment != null)
+                        {
+                            await shopFunctions.SuccessfulPaymentRecived(message.Chat.Id);
                         }
                     }
                     break;
@@ -152,7 +162,8 @@ namespace TelegramBot
             {
                 new BotCommand() { Command = "/help" , Description = "Getting help from bot"},
                 new BotCommand() { Command = "/language", Description = "Set the language again"},
-                new BotCommand() { Command = "/home", Description = "Go to home page"}
+                new BotCommand() { Command = "/home", Description = "Go to home page"},
+                new BotCommand() { Command = "/start", Description = "Start this Bot"}
             };
         }
 
@@ -171,6 +182,15 @@ namespace TelegramBot
 
         }
 
-    
+        private async Task BotOnPreCheckoutQueryReceived(PreCheckoutQuery preCheckoutQuery)
+        {
+            await shopFunctions.PreCheckoutQueryReceived(preCheckoutQuery);
+        }
+
+        private Task BotOnShippingQueryReceived(ShippingQuery shippingQuery)
+        {
+            return HandlePollingErrorAsync(BotClient, new Exception(",kf"), CancellToken);
+        }
+
     }
 }
