@@ -1,3 +1,7 @@
+using Nelibur.ObjectMapper;
+using ServerBot.DTO.Response;
+using ServerBot.Entities;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,5 +25,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+TinyMapper.Bind<TgUserEntity, UserResponseDTO>();
+TinyMapper.Bind<Languages, LanguageResponseDTO>();
 
 app.Run();
