@@ -1,5 +1,6 @@
 ﻿using System;
 using ServerBot.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerBot.Entities
 {
@@ -10,5 +11,6 @@ namespace ServerBot.Entities
         public DateTime EndDate { get; set; }
         public string ForProgram { get; set; }
         public TypeOfLicenses TypeOfLicense { get; set; }
+        //public IEnumerable<UserEntity> Users { get; set; } //TODO сделать Many to Many
     }
 }
