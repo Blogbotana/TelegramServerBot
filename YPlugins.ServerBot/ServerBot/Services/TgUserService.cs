@@ -5,19 +5,22 @@ using AutoMapper;
 
 namespace ServerBot.Services
 {
-    public class TgUserService
+    public static class TgUserService
     {
-        public void CreateUser(UserDTO user)
+        static MapperConfiguration configUser = new MapperConfiguration(cfg => cfg.CreateMap<UserEntity, UserDTO>());
+        public static void CreateUser(UserDTO user)
         {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<UserEntity, UserDTO>());
-        }
-    }
+            var mapper = new Mapper(configUser);
+            var userEntity = mapper.Map<UserEntity>(user);
+            if (userEntity == null)
+                throw new Exception("Не сработал Mapper");
 
-    public class AppMappingProfile : Profile
-    {
-        public AppMappingProfile()
-        {
-            CreateMap<Person, Student>();
+            var result = TgUserRepository.CreateUser(userEntity);
+
+            if(result <= 0)
+            {
+                throw new Exception("Не добавили пользователя" + userEntity.TgId + " " + userEntity.Email);
+            }
         }
     }
 }
