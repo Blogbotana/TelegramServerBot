@@ -8,19 +8,19 @@ namespace ServerBot.Services
     public static class TgUserService
     {
         static MapperConfiguration configUser = new MapperConfiguration(cfg => cfg.CreateMap<UserEntity, UserDTO>());
-        public static void CreateUser(UserDTO user)
+        static MapperConfiguration configUser1 = new MapperConfiguration(cfg => cfg.CreateMap<UserDTO, UserEntity>()); 
+        public static int CreateUser(UserDTO user)
         {
-            var mapper = new Mapper(configUser);
+            var mapper = new Mapper(configUser1);
             var userEntity = mapper.Map<UserEntity>(user);
             if (userEntity == null)
                 throw new Exception("Не сработал Mapper");
 
+            userEntity.Language = new LanguageEntity() { CodeTelegram = "ru" };//TODO Исправить костыль тут
+
             var result = TgUserRepository.CreateUser(userEntity);
 
-            if(result <= 0)
-            {
-                throw new Exception("Не добавили пользователя" + userEntity.TgId + " " + userEntity.Email);
-            }
+            return result;
         }
     }
 }
