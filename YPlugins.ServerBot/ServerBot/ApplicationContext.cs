@@ -12,7 +12,6 @@ namespace ServerBot
 
         public ApplicationContext()
         {
-            Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionBuilder)

@@ -5,11 +5,11 @@ namespace ServerBot.Repositories
     public static class LicenseRepository
     {
 
-        public static IEnumerable<LicenseEntity> GetLicenseOfUser(UserEntity userEntity)
+        public static IEnumerable<LicenseEntity>? GetLicenseOfUser(int userId)
         {
             using (ApplicationContext context = new ApplicationContext())
             {
-                var licenses = context.Users.Where(u => u.Id == userEntity.Id).FirstOrDefault().Licenses;
+                var licenses = context.Users.Where(u => u.Id == userId).FirstOrDefault().Licenses;
 
                 return licenses;
             }

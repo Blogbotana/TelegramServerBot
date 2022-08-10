@@ -9,22 +9,17 @@ namespace ServerBot.Controllers
     public class UserController
     {
         private readonly ILogger<UserController> _logger;
+        private TgUserService userService = TgUserService.GetService();
 
         public UserController(ILogger<UserController> logger)
         {
             _logger = logger;
         }
 
-        //[HttpGet(Name = "user/{tgId}")]
-        //public UserDTO GetUser(long tgId)
-        //{
-        //    return TgUserService.CreateUser(tgId);
-        //}
-
         [HttpPost("user/create")]
         public bool CreateUser([FromBody] UserDTO tgUser)
         {
-            return TgUserService.CreateUser(tgUser) == 1;
+            return userService.CreateUser(tgUser);
         }
     }
 }

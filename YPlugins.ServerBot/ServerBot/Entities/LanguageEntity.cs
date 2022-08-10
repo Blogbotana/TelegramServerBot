@@ -1,4 +1,6 @@
-﻿namespace ServerBot.Entities
+﻿using System.ComponentModel;
+
+namespace ServerBot.Entities
 {
     public class LanguageEntity
     {

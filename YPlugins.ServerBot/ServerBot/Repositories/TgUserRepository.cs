@@ -17,15 +17,12 @@ namespace ServerBot.Repositories
             using (ApplicationContext applicationContext = new ApplicationContext())
             {
                 var lang = applicationContext.Languages.FirstOrDefault(l =>
-                l.CodeTelegram == userEntity.Language.CodeTelegram || 
-                l.CodeTekla == userEntity.Language.CodeTekla ||
-                l.CodeWindows == userEntity.Language.CodeWindows);
+                l.Id == userEntity.Language.Id);
 
                 if (lang == null)
-                    throw new Exception("Language is null");
+                    lang = LanguageRepository.GetDefaultLanguage();
 
                 userEntity.Language = lang;
-                userEntity.Licenses = null;
                 applicationContext.Users.Add(userEntity);
                 return applicationContext.SaveChanges();
             }

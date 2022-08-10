@@ -1,26 +1,40 @@
 ﻿using ServerBot.Entities;
 using ServerBot.Repositories;
-using ServerBot.DTO;
 using AutoMapper;
+using ServerBot.DTO;
 
 namespace ServerBot.Services
 {
-    public static class TgUserService
+    public class TgUserService
     {
-        static MapperConfiguration configUser = new MapperConfiguration(cfg => cfg.CreateMap<UserEntity, UserDTO>());
-        static MapperConfiguration configUser1 = new MapperConfiguration(cfg => cfg.CreateMap<UserDTO, UserEntity>()); 
-        public static int CreateUser(UserDTO user)
+        private static TgUserService instance;
+        private static MapperConfiguration configUser = new MapperConfiguration(cfg => cfg.CreateMap<UserDTO, UserEntity>());//From DTO To Entity. Static field is inquired by mapper
+
+
+        public static TgUserService GetService()
         {
-            var mapper = new Mapper(configUser1);
+            if (instance == null)
+                instance = new TgUserService();
+
+            return instance;
+        }
+        private TgUserService()
+        {
+
+        }
+
+        public bool CreateUser(UserDTO user)
+        {
+            var mapper = new Mapper(configUser);
             var userEntity = mapper.Map<UserEntity>(user);
             if (userEntity == null)
                 throw new Exception("Не сработал Mapper");
 
-            userEntity.Language = new LanguageEntity() { CodeTelegram = "ru" };//TODO Исправить костыль тут
+            userEntity.Language = LanguageRepository.GetLanguageByCode(user.LanguageCode);
 
             var result = TgUserRepository.CreateUser(userEntity);
 
-            return result;
+            return result > 0;
         }
     }
 }

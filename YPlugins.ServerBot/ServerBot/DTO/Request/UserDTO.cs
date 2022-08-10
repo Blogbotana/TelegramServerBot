@@ -7,6 +7,6 @@
         public string LastName { get; set; }
         public string Email { get; set; }
         public string ComputerInformation { get; set; }
-        //public DateTime LastLogin { get; set; }
+        public string LanguageCode { get; set; }
     }
 }
