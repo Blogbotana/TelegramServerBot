@@ -8,8 +8,8 @@ namespace ServerBot.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public DateTime EndDate { get; set; }
-        public string ForProgram { get; set; }
+        public DateTime ExpirationDate { get; set; }
+        public string Program { get; set; }
         public TypeOfLicenses TypeOfLicense { get; set; }
         //public IEnumerable<UserEntity> Users { get; set; } //TODO сделать Many to Many
     }

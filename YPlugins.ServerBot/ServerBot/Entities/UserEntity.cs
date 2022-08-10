@@ -10,6 +10,7 @@ namespace ServerBot.Entities
         public long TgId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        [EmailAddress(ErrorMessage = "The email format is not valid")]
         public string Email { get; set; }
         public string ComputerInformation { get; set; }
         public DateTime LastLogin { get; set; }
