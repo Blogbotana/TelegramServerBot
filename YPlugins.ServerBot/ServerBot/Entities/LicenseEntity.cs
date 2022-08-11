@@ -11,6 +11,5 @@ namespace ServerBot.Entities
         public DateTime ExpirationDate { get; set; }
         public string Program { get; set; }
         public TypeOfLicenses TypeOfLicense { get; set; }
-        //public IEnumerable<UserEntity> Users { get; set; } //TODO сделать Many to Many
     }
 }
