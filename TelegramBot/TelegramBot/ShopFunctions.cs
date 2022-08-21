@@ -49,12 +49,12 @@ namespace TelegramBot
 
         }
 
-        public async Task SuccessfulPaymentRecived(long chatId)
+        public async Task<Message> SuccessfulPaymentRecived(long chatId)
         {
             await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId, "Успешно, вы молодец", cancellationToken: TGBot.MyBot.CancellToken);
 
             InputOnlineFile stiker = new InputOnlineFile("https://tlgrm.ru/_/stickers/5ba/fb7/5bafb75c-6bee-39e0-a4f3-a23e523feded/192/25.webp");
-            await TGBot.MyBot.BotClient.SendStickerAsync(chatId, stiker, cancellationToken: TGBot.MyBot.CancellToken);
+            return await TGBot.MyBot.BotClient.SendStickerAsync(chatId, stiker, cancellationToken: TGBot.MyBot.CancellToken);
         }
     }
 }

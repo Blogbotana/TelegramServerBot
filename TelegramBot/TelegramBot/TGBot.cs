@@ -107,11 +107,11 @@ namespace TelegramBot
             return Task.CompletedTask;
         }
 
-        private async Task BotOnMessageReceived(Message message)
+        private async Task<Message> BotOnMessageReceived(Message message)
         {
             if(message.ReplyToMessage != null && (IsGetMessagesAsSupport[message.ReplyToMessage.Chat.Id] || supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id)))
             {
-                await supportFunction.ReplyToUserTheAnswerFromSupport(message);
+                return await supportFunction.ReplyToUserTheAnswerFromSupport(message);
             }
 
 
@@ -140,20 +140,34 @@ namespace TelegramBot
                         LastMessageFromBot[message.From.Id] = await dialogFunction.SendHelloMessage(message.Chat.Id);
                         break;
                     }
+                case string data when data.ToLower().StartsWith("/send"):
+                    {
+                        await supportFunction.ReplyToUserTheAnswerFromSupport(message);
+                        break;
+                    }
                 default:
                     {
                         if (IsGetMessagesAsSupport[message.From.Id])
                         {
-                            await supportFunction.SupportMessageToAdmin(message);
+                            return await supportFunction.SupportMessageToAdmin(message);
                         }
 
                         if(message.SuccessfulPayment != null)
                         {
-                            await shopFunctions.SuccessfulPaymentRecived(message.Chat.Id);
+                            return await shopFunctions.SuccessfulPaymentRecived(message.Chat.Id);
+                        }
+
+                        if(message.Caption != null)
+                        {
+                            if (message.Caption.ToLower().StartsWith("/send"))
+                            {
+                                await supportFunction.ReplyToUserTheAnswerFromSupport(message);
+                            }
                         }
                     }
                     break;
             }
+            return null;
         }
 
         private IEnumerable<BotCommand> GetBotsCommands()

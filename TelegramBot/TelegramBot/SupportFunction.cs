@@ -45,7 +45,7 @@ namespace TelegramBot
             if (AdminID.Contains(message.Chat.Id))
                 return message;
 
-            string introduction = "Было получено обращение от\n" + message.Chat.FirstName + " " + message.Chat.LastName + " "
+            string introduction = "Bot: Было получено обращение от\n" + message.Chat.FirstName + " " + message.Chat.LastName + " "
                 + " @" + message.Chat.Username + " " + message.Chat.Id;
 
 
@@ -91,24 +91,6 @@ namespace TelegramBot
                 {
                     return await CloseSupport(message);
                 }
-                if (message.Text.ToLower().StartsWith("/send"))
-                {
-                    string[] splited = message.Text.Split(' ');
-                    if (splited.Length > 2)
-                    {
-                        long chatid;
-                        if (long.TryParse(splited[1], out chatid))
-                        {
-                            var enumerablesplit = splited.ToList();
-                            enumerablesplit.RemoveAt(0);
-                            enumerablesplit.RemoveAt(0);
-                            message.Text = String.Join(' ', enumerablesplit);
-                            message.ReplyToMessage.ForwardFrom = new User() { Id = chatid};
-                            return await ReplyToUserTheAnswerFromSupport(message);
-                        }
-                    }
-                    return null;
-                }
                 else
                 {
                     return await ReplyToUser(message);
@@ -139,48 +121,112 @@ namespace TelegramBot
                     cancellationToken: TGBot.MyBot.CancellToken);
         }
 
-        private async Task<Message> ReplyToUser(Message message)
+        public async Task<Message> ReplyToUser(Message message)
         {
-            if (message.ReplyToMessage.ForwardFrom == null)//TODO сделать чтобы работало с контентом типа картинок и стикеров
-            { return await TGBot.MyBot.BotClient.SendTextMessageAsync(message.From.Id, "Ошибка произошла, укажите ID пользователя"); }
+            long id = GetIdOfUser(ref message);
+            if (id == 0)
+            {
+                if (AdminID.Contains(message.From.Id))
+                    return await TGBot.MyBot.BotClient.SendTextMessageAsync(message.From.Id, "Ошибка произошла, укажите ID пользователя");
+                else
+                    return await SupportMessageToAdmin(message);
+            }
+                
+            
+            if (message.Photo != null)
+            {
+                PhotoSize[] photo = message.Photo;
+                InputOnlineFile file = new InputOnlineFile(photo[0].FileId);
+                return await TGBot.MyBot.BotClient.SendPhotoAsync(id, file, message.Caption, cancellationToken: TGBot.MyBot.CancellToken);
+            }
+            if (message.Sticker != null)
+            {
+                InputOnlineFile striker = new InputOnlineFile(message.Sticker.FileId);
+                return await TGBot.MyBot.BotClient.SendStickerAsync(id, striker, cancellationToken: TGBot.MyBot.CancellToken);
+            }
+            if (message.Audio != null)
+            {
+                InputOnlineFile audio = new InputOnlineFile(message.Audio.FileId);
+                return await TGBot.MyBot.BotClient.SendAudioAsync(id, audio, cancellationToken: TGBot.MyBot.CancellToken);
+            }
+            if (message.Animation != null)
+            {
+                InputOnlineFile animation = new InputOnlineFile(message.Animation.FileId);
+                return await TGBot.MyBot.BotClient.SendAnimationAsync(id, animation, cancellationToken: TGBot.MyBot.CancellToken);
+            }
+            if (message.Voice != null)
+            {
+                InputOnlineFile voice = new InputOnlineFile(message.Voice.FileId);
+                return await TGBot.MyBot.BotClient.SendVoiceAsync(id, voice, cancellationToken: TGBot.MyBot.CancellToken);
+            }
+            if (message.Document != null)
+            {
+                InputOnlineFile document = new InputOnlineFile(message.Document.FileId);
+                return await TGBot.MyBot.BotClient.SendDocumentAsync(id, document, cancellationToken: TGBot.MyBot.CancellToken);
+            }
+            if (message.Text != null)
+                return await TGBot.MyBot.BotClient.SendTextMessageAsync(id, message.Text);
+
+            return null;
+        }
+
+        private long GetIdOfUser(ref Message message)
+        {
+            if(message.ReplyToMessage != null)//Если админ отвечает пользователю
+            {
+                if (message.ReplyToMessage.ForwardFrom == null)//Если пользователь запретил пересылку сообщений
+                {
+                    if(message.ReplyToMessage.Text != null)
+                    {
+                        if (message.ReplyToMessage.Text.ToLower().StartsWith("bot:"))
+                        {
+                            string[] texts = message.ReplyToMessage.Text.Split(' ');
+                            string idofuser = texts[texts.Length - 1];
+                            long Id1;
+                            if (long.TryParse(idofuser, out Id1))
+                            {
+                                return Id1;
+                            }
+                        }
+                    }
+                    return default(long);
+                }
+                else
+                    return message.ReplyToMessage.ForwardFrom.Id;
+            }
             else
             {
-                long id = message.ReplyToMessage.ForwardFrom.Id;
-                if (message.Photo != null)
+                string messageText = message.Text;
+                if (messageText == null)
                 {
-                    PhotoSize[] photo = message.Photo;
-                    InputOnlineFile file = new InputOnlineFile(photo[0].FileId);
-                    return await TGBot.MyBot.BotClient.SendPhotoAsync(id, file, message.Caption, cancellationToken: TGBot.MyBot.CancellToken);
+                    messageText = message.Caption;
                 }
-                if(message.Sticker != null)
+
+                if (messageText.ToLower().StartsWith("/send"))
                 {
-                    InputOnlineFile striker = new InputOnlineFile(message.Sticker.FileId);
-                    return await TGBot.MyBot.BotClient.SendStickerAsync(id, striker, cancellationToken: TGBot.MyBot.CancellToken);
+                    string[] splited = messageText.Split(' ');
+                    if (splited.Length > 2)
+                    {
+                        long chatid;
+                        if (long.TryParse(splited[1], out chatid))
+                        {
+                            var enumerablesplit = splited.ToList();
+                            enumerablesplit.RemoveAt(0);
+                            enumerablesplit.RemoveAt(0);
+                            messageText = String.Join(' ', enumerablesplit);
+
+                            if (message.Text != null)
+                                message.Text = messageText;
+                            else if (message.Caption != null)
+                                message.Caption = messageText;
+
+                            return chatid;
+                        }
+                    }
+                    return default(long);
                 }
-                if (message.Audio != null)
-                {
-                    InputOnlineFile audio = new InputOnlineFile(message.Audio.FileId);
-                    return await TGBot.MyBot.BotClient.SendAudioAsync(id, audio, cancellationToken: TGBot.MyBot.CancellToken);
-                }
-                if (message.Animation != null)
-                {
-                    InputOnlineFile animation = new InputOnlineFile(message.Animation.FileId);
-                    return await TGBot.MyBot.BotClient.SendAnimationAsync(id, animation, cancellationToken: TGBot.MyBot.CancellToken);
-                }
-                if (message.Voice != null)
-                {
-                    InputOnlineFile voice = new InputOnlineFile(message.Voice.FileId);
-                    return await TGBot.MyBot.BotClient.SendVoiceAsync(id, voice, cancellationToken: TGBot.MyBot.CancellToken);
-                }
-                if (message.Document != null)
-                {
-                    InputOnlineFile document = new InputOnlineFile(message.Document.FileId);
-                    return await TGBot.MyBot.BotClient.SendDocumentAsync(id, document, cancellationToken: TGBot.MyBot.CancellToken);
-                }
-                if (message.Text != null)
-                    return await TGBot.MyBot.BotClient.SendTextMessageAsync(id, message.Text);
             }
-            return null;
+            return default(long);
         }
     }
 }
