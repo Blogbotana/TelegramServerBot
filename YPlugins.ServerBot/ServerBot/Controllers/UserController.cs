@@ -23,15 +23,15 @@ namespace ServerBot.Controllers
         }
 
         //Error: Don't amswer LanguageCode (this is null) 
-        [HttpGet("GetByTgId/{tgUserId}")]
-        public UserDTOResponse? GetUser(long tgUserId)
+        [HttpGet("")]
+        public UserDTOResponse? GetUser([FromQuery] long tgUserId)
         {
             return userService.GetUserByTgId(tgUserId);
         }
 
         //Error: Don't amswer LanguageCode (this is null) 
-        [HttpGet("GetByEmail/{email}")]
-        public UserDTOResponse? GetUser(string email)
+        [HttpGet("")]
+        public UserDTOResponse? GetUser([FromQuery] string email)
         {
             return userService.GetUserByEmail(email);
         }
