@@ -252,3 +252,5 @@ paket-files/
 *.sln.iml
 token.txt
 payment.txt
+server.txt
+YPlugins.ServerBot/ServerBot/Migrations/
