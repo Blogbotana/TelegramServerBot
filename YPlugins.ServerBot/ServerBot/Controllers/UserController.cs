@@ -5,7 +5,7 @@ using ServerBot.Services;
 namespace ServerBot.Controllers
 {
     [ApiController]
-    [Route("/")]
+    [Route("User")]
     public class UserController
     {
         private readonly ILogger<UserController> _logger;
@@ -16,10 +16,24 @@ namespace ServerBot.Controllers
             _logger = logger;
         }
 
-        [HttpPost("user/create")]
+        [HttpPost("Create")]
         public bool CreateUser([FromBody] UserDTO tgUser)
         {
             return userService.CreateUser(tgUser);
+        }
+
+        //Error: Don't amswer LanguageCode (this is null) 
+        [HttpGet("GetUserByTG")]
+        public UserDTOResponse? GetUser([FromQuery] long tgUserId)
+        {
+            return userService.GetUserByTgId(tgUserId);
+        }
+
+        //Error: Don't amswer LanguageCode (this is null) 
+        [HttpGet("GetUserByEmail")]
+        public UserDTOResponse? GetUser([FromQuery] string email)
+        {
+            return userService.GetUserByEmail(email);
         }
     }
 }
