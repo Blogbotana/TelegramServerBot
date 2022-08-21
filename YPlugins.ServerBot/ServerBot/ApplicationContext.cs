@@ -10,10 +10,8 @@ namespace ServerBot
         public DbSet<LanguageEntity> Languages { get; set; }
         public DbSet<LicenseEntity> Licenses { get; set; }
 
-
         public ApplicationContext()
         {
-
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionBuilder)
@@ -21,7 +19,6 @@ namespace ServerBot
             if (!optionBuilder.IsConfigured)
             {
                 optionBuilder.UseNpgsql(File.ReadAllText("server.txt"));
-                //optionBuilder.UseNpgsql(ConfigurationManager.AppSettings["ConnectionString"]);
                 optionBuilder.EnableSensitiveDataLogging();
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using ServerBot.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ServerBot.Entities
 {
