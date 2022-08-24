@@ -3,6 +3,7 @@ using ServerBot.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
@@ -24,12 +25,20 @@ namespace TelegramBot.Server
         {
             get
             {
-                if (instance == null)
-                    lock (SyncObject)
-                    {
-                        if (instance == null)
-                            instance = new ServerAPI();
-                    }
+                try
+                {
+                    if (instance == null)
+                        lock (SyncObject)
+                        {
+                            if (instance == null)
+                                instance = new ServerAPI();
+                        }
+                    return instance;
+                }
+                catch (Exception e1)
+                {
+                    Console.WriteLine(e1.ToString());
+                }
                 return instance;
             }
         }
@@ -38,22 +47,21 @@ namespace TelegramBot.Server
         {
             UserDTO userDTO = new UserDTO()
             {
-                ComputerInformation = "CompInfo",
-                Email = userfromTG.Username,
+                ComputerInformation = null,
+                Email = null,
                 FirstName = userfromTG.FirstName,
                 LastName = userfromTG.LastName,
                 LanguageCode = userfromTG.LanguageCode,
                 TgId = userfromTG.Id
             };
 
+            var responce = HTTP.GetInstance.POST(serverAddress + "User/Create", userDTO);
+        }
 
-            //Dictionary<string, string> parameters = new Dictionary<string, string>
-            //    {
-            //         { "userJson", JsonConvert.SerializeObject(userDTO) }
-            //    };
-            //byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(userDTO));
-
-            HTTP.GetInstance.POST(serverAddress + "User/Create", JsonConvert.SerializeObject(userDTO));
+        public UserDTOResponse GetUserByTgId(long Id)
+        {
+            var responce = HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}").Result;
+            return JsonConvert.DeserializeObject<UserDTOResponse>(responce);
         }
     }
 }

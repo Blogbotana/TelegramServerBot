@@ -128,6 +128,7 @@ namespace TelegramBot
                     }
                 case "/language":
                     {
+                        ServerAPI.GetInstance.GetUserByTgId(message.From.Id);
                         IsGetMessagesAsSupport[message.From.Id] = false;
                         LastMessageFromBot[message.From.Id] = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
                         break;

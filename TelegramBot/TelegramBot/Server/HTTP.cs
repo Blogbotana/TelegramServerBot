@@ -1,10 +1,12 @@
-﻿using System;
+﻿using ServerBot.DTO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +23,12 @@ namespace TelegramBot.Server
         private readonly static HttpClient httpClient = new HttpClient();
         private HTTP()
         {
-                
+            httpClient.Timeout = TimeSpan.FromSeconds(5);
+        }
+
+        ~HTTP()
+        {
+            httpClient.Dispose();    
         }
 
         public static HTTP GetInstance
@@ -38,104 +45,67 @@ namespace TelegramBot.Server
             }
         }
 
-        public string GET(string url)//в доработке
+        public async Task<string> GET(string url)
         {
-            string answer = "";
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                request.Method = "GET";
-                request.AllowAutoRedirect = false;
-                request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-                request.Timeout = 5000;
-
-                answer = GetAnswer(request);
+                var response = await httpClient.GetAsync(url);
+                if(!response.IsSuccessStatusCode)
+                    Console.WriteLine(response.ReasonPhrase + " in GET " + url + "\tStatus\t" + response.StatusCode.ToString());
+                
+                return await response.Content.ReadAsStringAsync();
             }
-            catch (WebException e1)
+            catch (HttpRequestException ex)
             {
-                throw e1;
-            }
-            return answer;
-        }
-
-        private string GetAnswer(HttpWebRequest request, byte[] bytes = null)
-        {
-            string answer = "";
-            HttpWebResponse response = null;
-            try
-            {
-                if (bytes != null)
-                    using (Stream stream = request.GetRequestStream())
-                    {
-                        stream.Write(bytes);
-                    }
-
-                response = (HttpWebResponse)request.GetResponse();
-                using (Stream stream = response.GetResponseStream())
-                {
-                    
-                    using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
-                    {
-                        answer = reader.ReadToEnd();
-                    }
-                }
-            }
-            catch (WebException webEx)
-            {
-                throw webEx;
+                throw new HttpRequestException("Couldn't send GET request:\n" + ex.ToString(), ex.InnerException, ex.StatusCode);
             }
             catch (Exception e)
             {
-                throw e;
+                throw new Exception("Couldn't send GET request. Не HttpRequestException\n" + e.ToString());
             }
-            finally
-            {
-                if (response != null)
-                {
-                    response.Close();
-                }
-            }
-
-            return answer;
         }
 
-        public async void POST(string url, string data)
+        public async Task<HttpResponseMessage> POST<T>(string url, T data) where T : class
         {
             try
             {
-                var content = new System.Net.Http.ByteArrayContent(Encoding.UTF8.GetBytes(data));
-                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
-                var response = await httpClient.PostAsync(url, content);
+                var response = await httpClient.PostAsJsonAsync(url, data);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine(response.ReasonPhrase + " in POST " + url + "\tStatus\t" + response.StatusCode.ToString());
+                    //TODO make logger
+                }
+                return response;
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                string error = "";
-                WebExceptionStatus status = ex.Status;
-
-                if ((ex.Response != null) && (ex.Response.GetResponseStream() != null))
-                {
-                    using (var stream = ex.Response.GetResponseStream())
-                    using (var reader = new StreamReader(stream))
-                    {
-                        error += reader.ReadToEnd() + "\n";
-                    }
-                }
-                else
-                {
-                    throw new Exception("Не удалось отправить POST запрос: \n" + ex.ToString());
-                }
-
-                if (status == WebExceptionStatus.ProtocolError)
-                {
-                    HttpWebResponse httpResponse = (HttpWebResponse)ex.Response;
-                    error += $"Статусный код ошибки: {(int)httpResponse.StatusCode} - {httpResponse.StatusCode} \n";
-                }
-
-                throw new Exception("Не удалось отправить POST запрос: \n" + error);
+                throw new HttpRequestException("Couldn't send POST request:\n" + ex.ToString(), ex.InnerException, ex.StatusCode);
             }
             catch (Exception e)
             {
-                throw new Exception("Не удалось отправить POST запрос. Не WebException: \n" + e.ToString());
+                throw new Exception("Couldn't send POST request. Не HttpRequestException\n" + e.ToString());
+            }
+        }
+
+        public async Task<HttpResponseMessage> PUT<T>(string url, T data) where T : class
+        {
+            try
+            {
+                var response = await httpClient.PutAsJsonAsync(url, data);
+
+                if (!response.IsSuccessStatusCode)
+                    Console.WriteLine(response.ReasonPhrase + " in GET " + url + "\tStatus\t" + response.StatusCode.ToString());
+
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new HttpRequestException("Couldn't send PUT request:\n" + ex.ToString(), ex.InnerException, ex.StatusCode);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Couldn't send PUT request. Не HttpRequestException\n" + e.ToString());
             }
         }
     }
