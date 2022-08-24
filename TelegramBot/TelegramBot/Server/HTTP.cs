@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +18,7 @@ namespace TelegramBot.Server
     {
         private static HTTP instance;
         private static object SyncObject = new object();
+        private readonly static HttpClient httpClient = new HttpClient();
         private HTTP()
         {
                 
@@ -34,7 +38,7 @@ namespace TelegramBot.Server
             }
         }
 
-        public string GET(string url)
+        public string GET(string url)//в доработке
         {
             string answer = "";
             try
@@ -54,15 +58,22 @@ namespace TelegramBot.Server
             return answer;
         }
 
-        private string GetAnswer(HttpWebRequest request)
+        private string GetAnswer(HttpWebRequest request, byte[] bytes = null)
         {
             string answer = "";
             HttpWebResponse response = null;
             try
             {
+                if (bytes != null)
+                    using (Stream stream = request.GetRequestStream())
+                    {
+                        stream.Write(bytes);
+                    }
+
                 response = (HttpWebResponse)request.GetResponse();
                 using (Stream stream = response.GetResponseStream())
                 {
+                    
                     using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                     {
                         answer = reader.ReadToEnd();
@@ -88,40 +99,13 @@ namespace TelegramBot.Server
             return answer;
         }
 
-        public void POST(string url, Dictionary<string, string> parameters)
-        {
-            POST(url, DataPrepare(parameters));
-        }
-
-        private string DataPrepare(Dictionary<string, string> postParameters)
+        public async void POST(string url, string data)
         {
             try
             {
-                List<string> postdata = new List<string>();
-                foreach (var postParameter in postParameters)
-                {
-                    postdata.Add(postParameter.Key + '=' + WebUtility.UrlEncode(postParameter.Value));
-                }
-                return string.Join("&", postdata);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Не удалось преобразовать post data: " + e.ToString());
-            }
-        }
-
-        private void POST(string url, string data)
-        {
-            try
-            {
-                url += "?" + data;
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                request.Method = "POST";
-                request.ContentType = "application/json";
-                request.ContentLength = data.Length;
-                request.Timeout = 5000;
-
-                string answ = GetAnswer(request);
+                var content = new System.Net.Http.ByteArrayContent(Encoding.UTF8.GetBytes(data));
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+                var response = await httpClient.PostAsync(url, content);
             }
             catch (WebException ex)
             {

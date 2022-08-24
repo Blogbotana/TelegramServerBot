@@ -5,6 +5,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Payments;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBot.Server;
 
 namespace TelegramBot
 {
@@ -22,7 +23,7 @@ namespace TelegramBot
         public Dictionary<long, bool> IsGetMessagesAsSupport { get; set; } = new Dictionary<long, bool>();
         public Dictionary<long, string> UserLanguage { get; set; } = new Dictionary<long, string>();
 
-        public Dictionary<long, Message> LastMessageFromBot { get; set; } = new Dictionary<long, Message>();
+        public Dictionary<long, Message?> LastMessageFromBot { get; set; } = new Dictionary<long, Message?>();
 
         private TGBot()
         {
@@ -37,7 +38,6 @@ namespace TelegramBot
                     _myBot = new TGBot();
                 return _myBot;
             }
-            //private set { }
         }
 
         public void Launch()
@@ -52,7 +52,7 @@ namespace TelegramBot
 
             BotClient.SetMyCommandsAsync(GetBotsCommands(), scope: new BotCommandScopeDefault(), cancellationToken: CancellToken);
 
-            
+
 
             var me = BotClient.GetMeAsync().Result;
             Console.WriteLine($"Start listening for @{me.Username}");
@@ -63,7 +63,10 @@ namespace TelegramBot
             if (update.Message != null)
             {
                 if (!LastMessageFromBot.ContainsKey(update.Message.From.Id))
-                    LastMessageFromBot.Add(update.Message.Chat.Id, null);
+                {
+                    ServerAPI.GetInstance.RegisterUser(update.Message.From);
+                    LastMessageFromBot.Add(update.Message.Chat.Id, null); 
+                }
 
                 if (!IsGetMessagesAsSupport.ContainsKey(update.Message.From.Id))
                     IsGetMessagesAsSupport.Add(update.Message.Chat.Id, false);

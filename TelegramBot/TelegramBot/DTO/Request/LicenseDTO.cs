@@ -1,6 +1,4 @@
-﻿using ServerBot.Enums;
-
-namespace ServerBot.DTO
+﻿namespace ServerBot.DTO
 {
     public class LicenseDTO
     {
