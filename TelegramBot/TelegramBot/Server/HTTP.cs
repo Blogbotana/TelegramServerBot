@@ -114,7 +114,7 @@ namespace TelegramBot.Server
             try
             {
                 StringContent stringContent = new StringContent(url);
-                var response = await httpClient.PutAsync(url, stringContent);//TODO test for work
+                var response = await httpClient.PutAsync(url, stringContent);//TODO test for work, i'm not sure it's working PUT stringcontent
 
                 if (!response.IsSuccessStatusCode)
                     Console.WriteLine(response.ReasonPhrase + " in PUT " + url + "\tStatus\t" + response.StatusCode.ToString());
