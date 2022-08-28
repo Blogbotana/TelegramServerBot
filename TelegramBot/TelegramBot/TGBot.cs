@@ -19,7 +19,7 @@ namespace TelegramBot
         private SupportFunction supportFunction = new SupportFunction();
         private ShopFunctions shopFunctions = new ShopFunctions();
         private static TGBot? _myBot;
-
+        //TODO сделать проверку последнего сообщения от пользователя in query
         public Dictionary<long, UserInfo> Users { get; set; } = new Dictionary<long, UserInfo>();//TODO сделать при завершении консоли сохранение всех юзеров
 
         private TGBot()
@@ -49,7 +49,6 @@ namespace TelegramBot
 
             BotClient.SetMyCommandsAsync(GetBotsCommands(), scope: new BotCommandScopeDefault(), cancellationToken: CancellToken);
 
-
             var me = BotClient.GetMeAsync().Result;
             Console.WriteLine($"Start listening for @{me.Username}");
         }
@@ -78,7 +77,6 @@ namespace TelegramBot
                     UpdateType.ShippingQuery => BotOnShippingQueryReceived(update.ShippingQuery!),
                     _ => null
                 };
-
 
                 await handler;
             }

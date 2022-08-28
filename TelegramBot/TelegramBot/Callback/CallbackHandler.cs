@@ -19,7 +19,7 @@ namespace TelegramBot
             {
                 case string language when language.StartsWith("Lang_"):
                     {
-                        await ServerAPI.GetInstance.SetThisLanguageForUser(language.Remove(4));
+                        await ServerAPI.GetInstance.SetThisLanguageForUser(query.From.Id, language.Replace("Lang_", ""));
                         await TGBot.MyBot.BotClient.DeleteMessageAsync(query.From.Id, lastmessage.MessageId, TGBot.MyBot.CancellToken);
                         TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.SendHelloMessage(query.From.Id);
 

@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Telegram.Bot.Types;
+using TelegramBot.DTO.Response;
 
 namespace TelegramBot.Server
 {
@@ -59,26 +60,40 @@ namespace TelegramBot.Server
             var responce = HTTP.GetInstance.POST(serverAddress + "User/Create", userDTO);
         }
 
-        public UserDTOResponse GetUserByTgId(long Id)
+        public async Task<UserDTOResponse> GetUserByTgId(long Id)
         {
-            var responce = HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}").Result;
+            var responce = await HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}");
             return JsonConvert.DeserializeObject<UserDTOResponse>(responce);
         } 
 
-        public  LanguageDTOResponse GetUserLanguage(long Id)//TODO async
+        public async Task<LanguageDTOResponse> GetUserLanguage(long Id)
         {
-            var responce = HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}").Result;
+            var responce = await HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}");
             return JsonConvert.DeserializeObject<LanguageDTOResponse>(responce);
         }
 
-        public async Task SetThisLanguageForUser(string Code)
+        public async Task SetThisLanguageForUser(long Id, string Code)
         {
-            //TODO Сделать запись в данных что пользователь хочет этот язык
+            LanguageDTO lang = new LanguageDTO()
+            {
+                IETF_LanguageTag = Code
+            };
+            await HTTP.GetInstance.PUT(serverAddress + $"User/SetLangForUser?tgUserId={Id}", lang);
         }
 
-        public async Task<bool> UserBoughtThisLicense(string name)
+        public async Task UserBoughtThisLicense(string name)
         {
-            return false;//TODO Тут будет обработка перед тем, как сказать, что успешная оплата
+            LicenseDTO license = new LicenseDTO()
+            {
+                Name = name
+            };
+            await HTTP.GetInstance.PUT(serverAddress + $"User/BoughtLicense", license);
+        }
+
+        public async Task<IEnumerable<LicenseDTOResponse>> GetAllLicensesOfUser(long Id)
+        {
+            UserDTOResponse user = await GetUserByTgId(Id);
+            return user.Licenses;
         }
     }
 }

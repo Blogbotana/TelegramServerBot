@@ -6,6 +6,7 @@ using Telegram.Bot.Types.Payments;
 using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Server;
+using TelegramBot.DTO.Response;
 
 namespace TelegramBot
 {
@@ -41,7 +42,7 @@ namespace TelegramBot
 
         public async Task<Message> SuccessfulPaymentRecived(SuccessfulPayment payment,long chatId)
         {
-            bool success = await ServerAPI.GetInstance.UserBoughtThisLicense(payment.InvoicePayload);
+            await ServerAPI.GetInstance.UserBoughtThisLicense(payment.InvoicePayload);
 
             await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId, "Успешно, вы молодец", cancellationToken: TGBot.MyBot.CancellToken);
 

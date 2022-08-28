@@ -95,7 +95,29 @@ namespace TelegramBot.Server
                 var response = await httpClient.PutAsJsonAsync(url, data);
 
                 if (!response.IsSuccessStatusCode)
-                    Console.WriteLine(response.ReasonPhrase + " in GET " + url + "\tStatus\t" + response.StatusCode.ToString());
+                    Console.WriteLine(response.ReasonPhrase + " in PUT " + url + "\tStatus\t" + response.StatusCode.ToString());
+
+                return response;
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new HttpRequestException("Couldn't send PUT request:\n" + ex.ToString(), ex.InnerException, ex.StatusCode);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Couldn't send PUT request. Не HttpRequestException\n" + e.ToString());
+            }
+        }
+
+        public async Task<HttpResponseMessage> PUT(string url)
+        {
+            try
+            {
+                StringContent stringContent = new StringContent(url);
+                var response = await httpClient.PutAsync(url, stringContent);//TODO test for work
+
+                if (!response.IsSuccessStatusCode)
+                    Console.WriteLine(response.ReasonPhrase + " in PUT " + url + "\tStatus\t" + response.StatusCode.ToString());
 
                 return response;
             }
