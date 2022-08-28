@@ -15,7 +15,7 @@ namespace TelegramBot
 
         public async Task<Message> ReplyToUserSupport(long IdChat)
         {
-            TGBot.MyBot.IsGetMessagesAsSupport[IdChat] = true;
+            TGBot.MyBot.Users[IdChat].IsNeedSupport = true;
 
             return await TGBot.MyBot.BotClient.SendTextMessageAsync(IdChat, 
                 text: Localization.GetTranslation("Опишите вашу проблему подробно и если обязательно, прикрепите скрины ошибок, без них будет сложно вам помочь"),
@@ -24,7 +24,7 @@ namespace TelegramBot
 
         public async Task<Message> EditSupportMessage(long IdChat, int msgId)
         {
-            TGBot.MyBot.IsGetMessagesAsSupport[IdChat] = true;//dgfsdfd Не работает TODO
+            TGBot.MyBot.Users[IdChat].IsNeedSupport = true;
 
             return await TGBot.MyBot.BotClient.EditMessageTextAsync(IdChat, msgId, 
                 text: Localization.GetTranslation("Опишите вашу проблему подробно и если обязательно, прикрепите скрины ошибок, без них будет сложно вам помочь"),
@@ -33,7 +33,7 @@ namespace TelegramBot
 
         public async Task<Message> SendSupportMessage(long IdChat)
         {
-            TGBot.MyBot.IsGetMessagesAsSupport[IdChat] = true;
+            TGBot.MyBot.Users[IdChat].IsNeedSupport = true;
 
             return await TGBot.MyBot.BotClient.SendTextMessageAsync(IdChat,
                 text: Localization.GetTranslation("Опишите вашу проблему подробно и если обязательно, прикрепите скрины ошибок, без них будет сложно вам помочь"),
@@ -106,7 +106,7 @@ namespace TelegramBot
 
         public async Task<Message> CloseSupport(Message message)
         {
-            TGBot.MyBot.IsGetMessagesAsSupport[message.Chat.Id] = false;
+            TGBot.MyBot.Users[message.Chat.Id].IsNeedSupport = false;
 
             long chatId = message.Chat.Id;
 

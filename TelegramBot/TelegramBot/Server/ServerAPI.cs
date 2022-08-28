@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ServerBot.DTO;
+using ServerBot.DTO.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,6 +63,22 @@ namespace TelegramBot.Server
         {
             var responce = HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}").Result;
             return JsonConvert.DeserializeObject<UserDTOResponse>(responce);
+        } 
+
+        public  LanguageDTOResponse GetUserLanguage(long Id)//TODO async
+        {
+            var responce = HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}").Result;
+            return JsonConvert.DeserializeObject<LanguageDTOResponse>(responce);
+        }
+
+        public async Task SetThisLanguageForUser(string Code)
+        {
+            //TODO Сделать запись в данных что пользователь хочет этот язык
+        }
+
+        public async Task<bool> UserBoughtThisLicense(string name)
+        {
+            return false;//TODO Тут будет обработка перед тем, как сказать, что успешная оплата
         }
     }
 }

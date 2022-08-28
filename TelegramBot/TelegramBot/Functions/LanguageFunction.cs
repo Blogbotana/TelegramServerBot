@@ -20,8 +20,8 @@ namespace TelegramBot
         {
             var buttons = new[]//TODO исправить языки
             {
-                new []{InlineKeyboardButton.WithCallbackData("Русский", "Lang_Rus") } ,
-                new []{InlineKeyboardButton.WithCallbackData("English", "Lang_Enu") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Русский", "Lang_ru") } ,
+                new []{InlineKeyboardButton.WithCallbackData("English", "Lang_en") } ,
                 new []{InlineKeyboardButton.WithCallbackData("Dutch", "Lang_Nld") },
                 new []{InlineKeyboardButton.WithCallbackData("Français", "Lang_Fra") },
                 new []{InlineKeyboardButton.WithCallbackData("Deutsch", "Lang_Deu") } ,

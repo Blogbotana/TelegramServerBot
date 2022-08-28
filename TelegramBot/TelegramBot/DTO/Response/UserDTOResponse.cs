@@ -1,4 +1,6 @@
-﻿namespace ServerBot.DTO
+﻿using TelegramBot.DTO.Response;
+
+namespace ServerBot.DTO
 {
     public class UserDTOResponse
     {
@@ -8,5 +10,6 @@
         public string Email { get; set; }
         public string ComputerInformation { get; set; }
         public string LanguageCode { get; set; }
+        public IEnumerable<LicenseDTOResponse> Licenses { get; set; }
     }
 }

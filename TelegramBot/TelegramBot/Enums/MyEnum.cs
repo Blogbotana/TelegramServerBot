@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TelegramBot
 {
-    public enum UserButtonsMainMenu
+    public enum UserButtonsMainMenu//TODO make many files
     {
         Support,
         DataBase,
