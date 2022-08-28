@@ -10,9 +10,18 @@ namespace ServerBot
         public DbSet<LanguageEntity> Languages { get; set; }
         public DbSet<LicenseEntity> Licenses { get; set; }
 
+
+        //public ApplicationContext(DbContextOptions<ApplicationContext> options)
+        //    : base(options)
+        //{
+
+        //    MyDataInitializer.SetData(this);
+        //}
         public ApplicationContext()
         {
+
         }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionBuilder)
         {
