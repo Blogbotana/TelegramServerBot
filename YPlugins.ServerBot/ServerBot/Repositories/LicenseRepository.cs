@@ -14,5 +14,15 @@ namespace ServerBot.Repositories
                 return licenses;
             }
         }
+
+        public static LicenseEntity? GetLicenseByName(string name)
+        {
+            using (ApplicationContext context = new ApplicationContext())
+            {
+                var licenses = context.Licenses.Where(u => u.Name == name).FirstOrDefault();
+
+                return licenses;
+            }
+        }
     }
 }

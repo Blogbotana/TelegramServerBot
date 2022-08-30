@@ -16,6 +16,28 @@ namespace ServerBot.Repositories
 
         }
 
+        public static LanguageEntity GetLanguageOfUser(long tgId)
+        {
+            using (ApplicationContext context = new ApplicationContext())
+            {
+                var user = context.Users.Where(u => u.TgId == tgId).FirstOrDefault();
+
+                return user.Language;
+            }
+
+        }
+
+        public static LanguageEntity GetLanguageOfUser(string email)
+        {
+            using (ApplicationContext context = new ApplicationContext())
+            {
+                var user = context.Users.Where(u => u.Email == email).FirstOrDefault();
+
+                return user.Language;
+            }
+
+        }
+
         public static LanguageEntity GetLanguageByCode(string langCode)
         {
             using (ApplicationContext context = new ApplicationContext())
