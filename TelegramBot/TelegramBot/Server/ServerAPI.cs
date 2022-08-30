@@ -95,5 +95,12 @@ namespace TelegramBot.Server
             UserDTOResponse user = await GetUserByTgId(Id);
             return user.Licenses;
         }
+
+        public async Task SetThisEmailAndNameForUser(long tgId, string? email, string? name)
+        {
+            if(email == null || name == null)
+                return;
+            await HTTP.GetInstance.PUT(serverAddress + $"User/Setdata?tgUserId={tgId}&email={email}&name={name}");
+        }
     }
 }
