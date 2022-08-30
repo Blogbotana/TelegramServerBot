@@ -110,6 +110,9 @@ namespace ServerBot.Repositories
                 if (user == null)
                     return;
 
+                if(user.Licenses == null)
+                    user.Licenses = new List<LicenseEntity>();
+
                 if (user.Licenses.Contains(licenseEntity))
                 {
                     //TODO understand how to work with it if user already have a license
