@@ -10,10 +10,11 @@ namespace ServerBot.Services
     {
         private static TgUserService instance;
         private static MapperConfiguration fromUserDTOToUserEntity = new MapperConfiguration(cfg => cfg.CreateMap<UserDTO, UserEntity>());//From DTO To Entity. Static field is inquired by mapper
-        private static MapperConfiguration fromUserEntityToUserDTOResponse = new MapperConfiguration(ctg => ctg.CreateMap<UserEntity, UserDTOResponse>());
+        //private static MapperConfiguration fromUserEntityToUserDTOResponse = new MapperConfiguration(ctg => ctg.CreateMap<UserEntity, UserDTOResponse>());
         private static MapperConfiguration fromLanguageEnityToLanguageDTOResponse = new MapperConfiguration(ctg => ctg.CreateMap<LanguageEntity, LanguageDTOResponse>());
         private static MapperConfiguration fromLanguageDTOToLanguageEntity = new MapperConfiguration(ctg => ctg.CreateMap<LanguageDTO, LanguageEntity>());
         //private static MapperConfiguration fromLicenseDTOToLicenseEntity = new MapperConfiguration(ctg => ctg.CreateMap<LicenseDTO, LicenseEntity>());
+        private static MapperConfiguration fromUserEntityToUserDTOResponse = new MapperConfiguration(ctg => ctg.CreateMap<UserEntity, UserDTOResponse>().ForMember(dest => dest.Language, opt => opt.MapFrom(src => src.Language)));
 
         public static TgUserService GetService()
         {

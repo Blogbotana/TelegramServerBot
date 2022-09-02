@@ -1,4 +1,6 @@
-﻿namespace ServerBot.DTO
+﻿using ServerBot.DTO.Response;
+
+namespace ServerBot.DTO
 {
     public class UserDTOResponse
     {
@@ -7,6 +9,8 @@
         public string LastName { get; set; }
         public string Email { get; set; }
         public string ComputerInformation { get; set; }
-        public string LanguageCode { get; set; }
+        public LanguageDTOResponse Language { get; set; }
+
+        public IEnumerable<LicenseDTOResponse> Licenses { get; set; }
     }
 }

@@ -28,6 +28,8 @@ namespace ServerBot.Repositories
                     return 0;
 
                 userEntity.Language = lang;
+                userEntity.Licenses = new List<LicenseEntity>();
+                userEntity.Licenses.ToList().AddRange(applicationContext.Licenses);
                 applicationContext.Users.Add(userEntity);
                 return applicationContext.SaveChanges();
             }

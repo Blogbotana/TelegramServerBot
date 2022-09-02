@@ -44,13 +44,13 @@ namespace ServerBot.Controllers
             return userService.GetUserLanguageByTgId(tgUserId);
         }
 
-        [HttpPut("SetLangForUser")]
+        [HttpPut("SetLangForUserByTgId")]
         public void SetUserLanguage([FromQuery] long tgUserId, [FromBody] LanguageDTO language)
         {
             userService.SetThisLanguageForUser(tgUserId, language);
         }
 
-        [HttpPut("SetLangForUser")]
+        [HttpPut("SetLangForUserByEmail")]
         public void SetUserLanguage([FromQuery] string email, [FromBody] LanguageDTO language)
         {
             userService.SetThisLanguageForUser(email, language);
@@ -66,16 +66,17 @@ namespace ServerBot.Controllers
         [HttpPut("BoughtLicenseForExactDays")]//TODO need to protect from hack
         public void UserBoughtLicenseForExactDays([FromQuery] long tgUserId, [FromQuery] int days, [FromBody] LicenseDTO license)
         {
+            //TODO securety with JWT token
             userService.ThisUserBoughtThisLicence(tgUserId, license, days);
         }
 
-        [HttpPut("Setdata")]
+        [HttpPut("SetdataByTgId")]
         public void SetThisEmailAndNameForUser([FromQuery] long tgUserId, [FromQuery] string email, [FromQuery] string name)
         {
             userService.SetEmailAndNameForTgUser(tgUserId, email, name);
         }
 
-        [HttpPut("Setdata")]
+        [HttpPut("SetdataByEmail")]
         public void SetThisEmailAndNameForUser([FromQuery] string email, [FromQuery] long tgUserId, [FromQuery] string name)
         {
             userService.SetTgIdAndNameForEmailUser( email, tgUserId, name);
