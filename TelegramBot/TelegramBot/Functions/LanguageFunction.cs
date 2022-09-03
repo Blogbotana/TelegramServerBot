@@ -16,24 +16,23 @@ namespace TelegramBot
                             cancellationToken: TGBot.MyBot.CancellToken);
         }
 
-        private IReplyMarkup GetButtonsLanguage()
+        private IReplyMarkup GetButtonsLanguage()//Lang_ + IETF_LanguageTag
         {
-            var buttons = new[]//TODO исправить языки
+            var buttons = new[]
             {
                 new []{InlineKeyboardButton.WithCallbackData("Русский", "Lang_ru") } ,
                 new []{InlineKeyboardButton.WithCallbackData("English", "Lang_en") } ,
-                new []{InlineKeyboardButton.WithCallbackData("Dutch", "Lang_Nld") },
-                new []{InlineKeyboardButton.WithCallbackData("Français", "Lang_Fra") },
-                new []{InlineKeyboardButton.WithCallbackData("Deutsch", "Lang_Deu") } ,
-                new []{InlineKeyboardButton.WithCallbackData("Italiano", "Lang_Ita") } ,
-                new []{InlineKeyboardButton.WithCallbackData("Español", "Lang_Esp") } ,
-                new []{InlineKeyboardButton.WithCallbackData("日本語", "Lang_Jpn") },
-                new []{InlineKeyboardButton.WithCallbackData("简体中文", "Lang_Chs") } ,
-                new []{InlineKeyboardButton.WithCallbackData("中国传统", "Lang_Cht") } ,
-                new []{InlineKeyboardButton.WithCallbackData("Čeština", "Lang_Csy") },
-                new []{InlineKeyboardButton.WithCallbackData("Português", "Lang_Ptb") } ,
-                new []{InlineKeyboardButton.WithCallbackData("Magyar", "Lang_Hun") } ,
-                new []{InlineKeyboardButton.WithCallbackData("Polskie", "Lang_Plk") }
+                new []{InlineKeyboardButton.WithCallbackData("Dutch", "Lang_nl") },
+                new []{InlineKeyboardButton.WithCallbackData("Français", "Lang_fr") },
+                new []{InlineKeyboardButton.WithCallbackData("Deutsch", "Lang_de") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Italiano", "Lang_it") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Español", "Lang_es") } ,
+                new []{InlineKeyboardButton.WithCallbackData("日本語", "Lang_ja") },
+                new []{InlineKeyboardButton.WithCallbackData("简体中文", "Lang_zh") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Čeština", "Lang_cs") },
+                new []{InlineKeyboardButton.WithCallbackData("Português", "Lang_pt") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Magyar", "Lang_hu") } ,
+                new []{InlineKeyboardButton.WithCallbackData("Polski", "Lang_pl") }
             };
 
             return new InlineKeyboardMarkup(buttons);

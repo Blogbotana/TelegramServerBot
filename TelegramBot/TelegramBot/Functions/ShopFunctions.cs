@@ -7,27 +7,47 @@ using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Server;
 using TelegramBot.DTO.Response;
+using System.Reflection.Metadata.Ecma335;
 
 namespace TelegramBot
 {
     public class ShopFunctions
     {
-        public async Task<Message> BuyTeklaLisence(long IdChat, UserButtonsTeklaMenu userButtons)
+        public async Task<Message> BuyLisence(long IdChat, UserButtonsTeklaMenu userButtons)
         {
-            if(userButtons != UserButtonsTeklaMenu.Back)
-            {
-                return await TGBot.MyBot.BotClient.SendInvoiceAsync(IdChat, GetTitleOfLicense(userButtons), GetDescriptionOfLecense(userButtons), userButtons.ToString(),
-                   GetShopToken(), "RUB", GetButtonsBuySpecification(), cancellationToken: TGBot.MyBot.CancellToken);
-            }
-            return null;
+            return await TGBot.MyBot.BotClient.SendInvoiceAsync(IdChat, GetTitleOfLicense(userButtons), 
+                GetDescriptionOfLecense(userButtons), userButtons.ToString(),
+                GetShopToken(), "RUB", GetShopCart(userButtons),
+                photoUrl: GetUrlOfLicense(userButtons), photoHeight: 248, photoWidth: 413,//Depends on picture that will be for plugin
+                needName: true, needEmail: true, sendEmailToProvider: true,
+                cancellationToken: TGBot.MyBot.CancellToken);
         }
 
-        private IEnumerable<LabeledPrice> GetButtonsBuySpecification()
+        private IEnumerable<LabeledPrice> GetShopCart(UserButtonsTeklaMenu userButtons)//Creating a cart
         {
-            return new List<LabeledPrice>()//TODO Оформить красиво
+            switch (userButtons)
             {
-                new LabeledPrice("Label", 10000)//100.00 currency
-            };
+                case UserButtonsTeklaMenu.ProfileChooser:
+                    return new List<LabeledPrice>()
+                    {
+                        new LabeledPrice("License of Profile Chooser in Tekla for 1 year", 100000),//1000.00 currency
+                    };
+                case UserButtonsTeklaMenu.SteelSpecification:
+                    return new List<LabeledPrice>()
+                    {
+                        new LabeledPrice("License of Specification Plugin for 1 year", 100000)
+                    };
+                case UserButtonsTeklaMenu.ExcelReportGenerator:
+                    return new List<LabeledPrice>()
+                    {
+                        new LabeledPrice("License of Excel Report Generator for templates for 1 year", 100000)
+                    };
+                default:
+                    return new List<LabeledPrice>()
+                    {
+                        new LabeledPrice("Unknown license", 0)
+                    };
+            }
         }
 
         private string GetShopToken()
@@ -42,6 +62,7 @@ namespace TelegramBot
 
         public async Task<Message> SuccessfulPaymentRecived(SuccessfulPayment payment,long chatId)
         {
+            await ServerAPI.GetInstance.SetEmailAndNameForUser(chatId, payment.OrderInfo.Email, payment.OrderInfo.Name);
             await ServerAPI.GetInstance.UserBoughtThisLicense(payment.InvoicePayload);
 
             await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId, "Успешно, вы молодец", cancellationToken: TGBot.MyBot.CancellToken);
@@ -55,26 +76,41 @@ namespace TelegramBot
             switch (userButtons)
             {
                 case UserButtonsTeklaMenu.ProfileChooser:
-                    return "";
+                    return "Profile Chooser for Tekla plugin";
                 case UserButtonsTeklaMenu.SteelSpecification:
-                    return "Specifications for Tekla";
+                    return "Specifications for Tekla plugin";
                 case UserButtonsTeklaMenu.ExcelReportGenerator:
-                    return "";
+                    return "Excel report generator for templates in Tekla";
                 default:
                     return "";
             }
         }
 
-        private string GetDescriptionOfLecense(UserButtonsTeklaMenu userButtons)//TODO оформить красиво
+        private string GetDescriptionOfLecense(UserButtonsTeklaMenu userButtons)
         {
             switch (userButtons)
             {
                 case UserButtonsTeklaMenu.ProfileChooser:
-                    return "";
+                    return "This is plugin that helps you to choose profiles quicker. More info: https://telegra.ph/Profile-Chooser-Plugin-08-30";//TODO Understand how to work with links
                 case UserButtonsTeklaMenu.SteelSpecification:
-                    return "Description of License";
+                    return "This is plugin for analyzing and changing model. You can create your own specifications also";
                 case UserButtonsTeklaMenu.ExcelReportGenerator:
+                    return "This is plugin for generate rpt file from existing excel file for Tekla reports";
+                default:
                     return "";
+            }
+        }
+
+        private string GetUrlOfLicense(UserButtonsTeklaMenu userButtons)//TODO make real icons for plugins
+        {
+            switch (userButtons)
+            {
+                case UserButtonsTeklaMenu.ProfileChooser:
+                    return "https://jurfininvest.ru/wp-content/uploads/2017/03/license2.png";
+                case UserButtonsTeklaMenu.SteelSpecification:
+                    return "https://jurfininvest.ru/wp-content/uploads/2017/03/license2.png";
+                case UserButtonsTeklaMenu.ExcelReportGenerator:
+                    return "https://jurfininvest.ru/wp-content/uploads/2017/03/license2.png";
                 default:
                     return "";
             }
