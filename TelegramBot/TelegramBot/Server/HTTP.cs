@@ -9,6 +9,8 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace TelegramBot.Server
@@ -74,6 +76,7 @@ namespace TelegramBot.Server
                 if (!response.IsSuccessStatusCode)
                 {
                     Console.WriteLine(response.ReasonPhrase + " in POST " + url + "\tStatus\t" + response.StatusCode.ToString());
+                    Console.WriteLine(response.RequestMessage.ToString());
                     //TODO make logger
                 }
                 return response;
