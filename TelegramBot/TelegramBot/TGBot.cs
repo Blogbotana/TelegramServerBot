@@ -5,6 +5,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Payments;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBot.Server;
 
 namespace TelegramBot
 {
@@ -18,11 +19,8 @@ namespace TelegramBot
         private SupportFunction supportFunction = new SupportFunction();
         private ShopFunctions shopFunctions = new ShopFunctions();
         private static TGBot? _myBot;
-
-        public Dictionary<long, bool> IsGetMessagesAsSupport { get; set; } = new Dictionary<long, bool>();
-        public Dictionary<long, string> UserLanguage { get; set; } = new Dictionary<long, string>();
-
-        public Dictionary<long, Message> LastMessageFromBot { get; set; } = new Dictionary<long, Message>();
+        //TODO сделать проверку последнего сообщения от пользователя in query
+        public Dictionary<long, UserInfo> Users { get; set; } = new Dictionary<long, UserInfo>();//TODO сделать при завершении консоли сохранение всех юзеров
 
         private TGBot()
         {
@@ -37,7 +35,6 @@ namespace TelegramBot
                     _myBot = new TGBot();
                 return _myBot;
             }
-            //private set { }
         }
 
         public void Launch()
@@ -52,37 +49,35 @@ namespace TelegramBot
 
             BotClient.SetMyCommandsAsync(GetBotsCommands(), scope: new BotCommandScopeDefault(), cancellationToken: CancellToken);
 
-            
-
             var me = BotClient.GetMeAsync().Result;
             Console.WriteLine($"Start listening for @{me.Username}");
         }
 
         async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            if (update.Message != null)
-            {
-                if (!LastMessageFromBot.ContainsKey(update.Message.From.Id))
-                    LastMessageFromBot.Add(update.Message.Chat.Id, null);
-
-                if (!IsGetMessagesAsSupport.ContainsKey(update.Message.From.Id))
-                    IsGetMessagesAsSupport.Add(update.Message.Chat.Id, false);
-            }
-
-            Task? handler = update.Type switch
-            {
-                UpdateType.Message => BotOnMessageReceived(update.Message!),
-                UpdateType.EditedMessage => BotOnMessageReceived(update.EditedMessage!),
-                UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update),
-                UpdateType.InlineQuery => BotOnInlineQueryReceived(update.InlineQuery!),
-                UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceived(update.ChosenInlineResult!),
-                UpdateType.PreCheckoutQuery => BotOnPreCheckoutQueryReceived(update.PreCheckoutQuery!),
-                UpdateType.ShippingQuery => BotOnShippingQueryReceived(update.ShippingQuery!),
-                _ => null
-            };
-
             try
             {
+                if (update.Message != null)
+                {
+                    if (!Users.ContainsKey(update.Message.From.Id))
+                    {
+                        ServerAPI.GetInstance.RegisterUser(update.Message.From);
+                        Users.Add(update.Message.Chat.Id, new UserInfo(update.Message.From.LanguageCode));
+                    }
+                }
+
+                Task? handler = update.Type switch
+                {
+                    UpdateType.Message => BotOnMessageReceived(update.Message!),
+                    UpdateType.EditedMessage => BotOnMessageReceived(update.EditedMessage!),
+                    UpdateType.CallbackQuery => BotOnCallbackQueryReceived(update),
+                    UpdateType.InlineQuery => BotOnInlineQueryReceived(update.InlineQuery!),
+                    UpdateType.ChosenInlineResult => BotOnChosenInlineResultReceived(update.ChosenInlineResult!),
+                    UpdateType.PreCheckoutQuery => BotOnPreCheckoutQueryReceived(update.PreCheckoutQuery!),
+                    UpdateType.ShippingQuery => BotOnShippingQueryReceived(update.ShippingQuery!),
+                    _ => null
+                };
+
                 await handler;
             }
 #pragma warning disable CA1031
@@ -91,7 +86,6 @@ namespace TelegramBot
             {
                 await HandlePollingErrorAsync(botClient, exception, cancellationToken);
             }
-            // Only process Message updates: https://core.telegram.org/bots/api#message
         }
 
         private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
@@ -109,7 +103,7 @@ namespace TelegramBot
 
         private async Task<Message> BotOnMessageReceived(Message message)
         {
-            if(message.ReplyToMessage != null && (IsGetMessagesAsSupport[message.ReplyToMessage.Chat.Id] || supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id)))
+            if(message.ReplyToMessage != null && (Users[message.ReplyToMessage.Chat.Id].IsNeedSupport || supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id)))
             {
                 return await supportFunction.ReplyToUserTheAnswerFromSupport(message);
             }
@@ -119,25 +113,25 @@ namespace TelegramBot
             {
                 case "/start":
                     {
-                        IsGetMessagesAsSupport[message.From.Id] = false;
-                        LastMessageFromBot[message.From.Id] = await dialogFunction.SendHelloMessage(message.Chat.Id);
+                        Users[message.From.Id].IsNeedSupport = false;
+                        Users[message.From.Id].LastMessage = await dialogFunction.SendHelloMessage(message.Chat.Id);
                         break;
                     }
                 case "/language":
                     {
-                        IsGetMessagesAsSupport[message.From.Id] = false;
-                        LastMessageFromBot[message.From.Id] = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
+                        Users[message.From.Id].IsNeedSupport = false;
+                        Users[message.From.Id].LastMessage = await languageFunction.SendLanguageMessageToUser(message.Chat.Id);
                         break;
                     }
                 case "/help":
                     {
-                        LastMessageFromBot[message.From.Id] = await supportFunction.SendSupportMessage(message.From.Id);
+                        Users[message.From.Id].LastMessage = await supportFunction.SendSupportMessage(message.From.Id);
                         break;
                     }
                 case "/home":
                     {
-                        IsGetMessagesAsSupport[message.From.Id] = false;
-                        LastMessageFromBot[message.From.Id] = await dialogFunction.SendHelloMessage(message.Chat.Id);
+                        Users[message.From.Id].IsNeedSupport = false;
+                        Users[message.From.Id].LastMessage = await dialogFunction.SendHelloMessage(message.Chat.Id);
                         break;
                     }
                 case string data when data.ToLower().StartsWith("/send"):
@@ -147,14 +141,14 @@ namespace TelegramBot
                     }
                 default:
                     {
-                        if (IsGetMessagesAsSupport[message.From.Id])
+                        if (Users[message.From.Id].IsNeedSupport)
                         {
                             return await supportFunction.SupportMessageToAdmin(message);
                         }
 
                         if(message.SuccessfulPayment != null)
                         {
-                            return await shopFunctions.SuccessfulPaymentRecived(message.Chat.Id);
+                            return await shopFunctions.SuccessfulPaymentRecived(message.SuccessfulPayment, message.Chat.Id);
                         }
 
                         if(message.Caption != null)
@@ -183,7 +177,7 @@ namespace TelegramBot
 
         private async Task BotOnCallbackQueryReceived(Update update)
         {
-            await callbackHandler.CallbackQueryReceived(update.CallbackQuery!, LastMessageFromBot[update.CallbackQuery.From.Id]);
+            await callbackHandler.CallbackQueryReceived(update.CallbackQuery!, Users[update.CallbackQuery.From.Id].LastMessage);
         }
 
         private async Task BotOnInlineQueryReceived(InlineQuery query)
@@ -203,7 +197,7 @@ namespace TelegramBot
 
         private Task BotOnShippingQueryReceived(ShippingQuery shippingQuery)
         {
-            return HandlePollingErrorAsync(BotClient, new Exception(",kf"), CancellToken);
+            return HandlePollingErrorAsync(BotClient, new Exception("No shipping"), CancellToken);
         }
 
     }

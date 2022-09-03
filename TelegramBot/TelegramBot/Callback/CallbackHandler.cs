@@ -4,6 +4,7 @@ using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBot.Server;
 
 namespace TelegramBot
 {
@@ -18,9 +19,10 @@ namespace TelegramBot
             {
                 case string language when language.StartsWith("Lang_"):
                     {
+                        await ServerAPI.GetInstance.SetThisLanguageForUser(query.From.Id, language.Replace("Lang_", ""));
                         await TGBot.MyBot.BotClient.DeleteMessageAsync(query.From.Id, lastmessage.MessageId, TGBot.MyBot.CancellToken);
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.SendHelloMessage(query.From.Id);
-                        //TODO Сделать запись в данных что пользователь хочет этот язык
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.SendHelloMessage(query.From.Id);
+
                         break;
                     }
                 case string button when button.StartsWith(typeof(UserButtonsMainMenu).Name):
@@ -60,17 +62,17 @@ namespace TelegramBot
             {
                 case string result when result == thisenum + UserButtonsMainMenu.Support.ToString():
                     {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await support.EditSupportMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await support.EditSupportMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 case string result when result == thisenum + UserButtonsMainMenu.DataBase.ToString():
                     {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditCustomMessage(query.From.Id, lastmessage.MessageId, "Раздел в разработке");
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditCustomMessage(query.From.Id, lastmessage.MessageId, "Раздел в разработке");
                         break;
                     }
                 case string result when result == thisenum + UserButtonsMainMenu.UserButtonsBuyLicenseMenu.ToString():
                     {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 default:
@@ -85,22 +87,22 @@ namespace TelegramBot
             {
                 case string data when data == thisenum + UserButtonsBuyLicenseMenu.TeklaStructures.ToString():
                     {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyTeklaLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditBuyTeklaLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 case string data when data == thisenum + UserButtonsBuyLicenseMenu.Revit.ToString():
                     {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyRevitLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditBuyRevitLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 case string data when data == thisenum + UserButtonsBuyLicenseMenu.Navis.ToString():
                     {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyNavisLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditBuyNavisLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 case string data when data == thisenum + UserButtonsBuyLicenseMenu.Back.ToString():
                     {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditHelloMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditHelloMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 default:
@@ -110,32 +112,16 @@ namespace TelegramBot
 
         private async Task ReplyToUserBuyTeklaLicense(CallbackQuery query, Message lastmessage, string button)
         {
-            var thisenum = typeof(UserButtonsTeklaMenu).Name + ".";
-            switch (button)
+            var data = FromStringToTeklaMenuEmun(button);
+            if(data == UserButtonsTeklaMenu.Back)
             {
-                case string data when data == thisenum + UserButtonsTeklaMenu.ProfileChooser.ToString():
-                    {
-
-                        break;
-                    }
-                case string data when data == thisenum + UserButtonsTeklaMenu.SteelSpecification.ToString():
-                    {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await _shopFunctions.BuyTeklaLisence(query.From.Id, UserButtonsTeklaMenu.SteelSpecification);
-                        break;
-                    }
-                case string data when data == thisenum + UserButtonsTeklaMenu.ExcelReportGenerator.ToString():
-                    {
-
-                        break;
-                    }
-                case string data when data == thisenum + UserButtonsTeklaMenu.Back.ToString():
-                    {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
-                        break;
-                    }
-                default:
-                    break;
+                TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
             }
+            else
+            {
+                TGBot.MyBot.Users[query.From.Id].LastMessage = await _shopFunctions.BuyLisence(query.From.Id, data);
+            }
+
         }
 
         private async Task ReplyToUserBuyRevitLicense(CallbackQuery query, Message lastmessage, string button)
@@ -145,7 +131,7 @@ namespace TelegramBot
             {
                 case string data when data == thisenum + UserButtonsRevitMenu.Back.ToString():
                     {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 default:
@@ -160,11 +146,37 @@ namespace TelegramBot
             {
                 case string data when data == thisenum + UserButtonsNavisMenu.Back.ToString():
                     {
-                        TGBot.MyBot.LastMessageFromBot[query.From.Id] = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
                         break;
                     }
                 default:
                     break;
+            }
+        }
+
+        private UserButtonsTeklaMenu FromStringToTeklaMenuEmun(string button)
+        {
+            var thisenum = typeof(UserButtonsTeklaMenu).Name + ".";
+            switch (button)
+            {
+                case string data when data == thisenum + UserButtonsTeklaMenu.ProfileChooser.ToString():
+                    {
+                        return UserButtonsTeklaMenu.ProfileChooser;
+                    }
+                case string data when data == thisenum + UserButtonsTeklaMenu.SteelSpecification.ToString():
+                    {
+                        return UserButtonsTeklaMenu.SteelSpecification;
+                    }
+                case string data when data == thisenum + UserButtonsTeklaMenu.ExcelReportGenerator.ToString():
+                    {
+                        return UserButtonsTeklaMenu.ExcelReportGenerator;
+                    }
+                case string data when data == thisenum + UserButtonsTeklaMenu.Back.ToString():
+                    {
+                        return UserButtonsTeklaMenu.Back;
+                    }
+                default:
+                    return UserButtonsTeklaMenu.Back;
             }
         }
     }
