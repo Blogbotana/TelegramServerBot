@@ -96,7 +96,7 @@ namespace TelegramBot.Server
             return user.Licenses;
         }
 
-        public async Task SetThisEmailAndNameForUser(long tgId, string? email, string? name)
+        public async Task SetEmailAndNameForUser(long tgId, string? email, string? name)
         {
             if(email == null || name == null)
                 return;

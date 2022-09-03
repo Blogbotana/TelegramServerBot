@@ -62,7 +62,7 @@ namespace TelegramBot
 
         public async Task<Message> SuccessfulPaymentRecived(SuccessfulPayment payment,long chatId)
         {
-            await ServerAPI.GetInstance.SetThisEmailAndNameForUser(chatId, payment.OrderInfo.Email, payment.OrderInfo.Name);
+            await ServerAPI.GetInstance.SetEmailAndNameForUser(chatId, payment.OrderInfo.Email, payment.OrderInfo.Name);
             await ServerAPI.GetInstance.UserBoughtThisLicense(payment.InvoicePayload);
 
             await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId, "Успешно, вы молодец", cancellationToken: TGBot.MyBot.CancellToken);
@@ -91,7 +91,7 @@ namespace TelegramBot
             switch (userButtons)
             {
                 case UserButtonsTeklaMenu.ProfileChooser:
-                    return "This is plugin that helps you to choose profiles quiker. More info: https://telegra.ph/Profile-Chooser-Plugin-08-30";//TODO Understand how to work with links
+                    return "This is plugin that helps you to choose profiles quicker. More info: https://telegra.ph/Profile-Chooser-Plugin-08-30";//TODO Understand how to work with links
                 case UserButtonsTeklaMenu.SteelSpecification:
                     return "This is plugin for analyzing and changing model. You can create your own specifications also";
                 case UserButtonsTeklaMenu.ExcelReportGenerator:
