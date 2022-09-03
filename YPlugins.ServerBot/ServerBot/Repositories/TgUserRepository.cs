@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ServerBot.DTO;
 using ServerBot.Entities;
 using System;
 
@@ -27,6 +28,8 @@ namespace ServerBot.Repositories
                     return 0;
 
                 userEntity.Language = lang;
+                userEntity.Licenses = new List<LicenseEntity>();
+                userEntity.Licenses.ToList().AddRange(applicationContext.Licenses);
                 applicationContext.Users.Add(userEntity);
                 return applicationContext.SaveChanges();
             }
@@ -81,6 +84,47 @@ namespace ServerBot.Repositories
 
                 context.SaveChanges();
                 return true;
+            }
+        }
+
+        public static void SetThisLanguageForUser(UserEntity userEntity, LanguageEntity languageEntity)
+        {
+            using (ApplicationContext context = new ApplicationContext())
+            {
+                var user = context.Users.Where(u => u.Id == userEntity.Id).FirstOrDefault();
+                if (user == null)
+                    return;
+
+                var language = context.Languages.Where(l => l.IETF_LanguageTag == languageEntity.IETF_LanguageTag).FirstOrDefault();
+                if (language == null)
+                    language = LanguageRepository.GetDefaultLanguage();
+
+                user.Language = language;
+                context.SaveChanges();
+            }
+        }
+
+        internal static void SetThisLicenseForUser(UserEntity userEntity, LicenseEntity licenseEntity)
+        {
+            using (ApplicationContext context = new ApplicationContext())
+            {
+                var user = context.Users.Where(u => u.Id == userEntity.Id).FirstOrDefault();
+                if (user == null)
+                    return;
+
+                if(user.Licenses == null)
+                    user.Licenses = new List<LicenseEntity>();
+
+                if (user.Licenses.Contains(licenseEntity))
+                {
+                    //TODO understand how to work with it if user already have a license
+                }
+                else
+                {
+                    user.Licenses.ToList().Add(licenseEntity);
+                }
+
+                context.SaveChanges();
             }
         }
     }
