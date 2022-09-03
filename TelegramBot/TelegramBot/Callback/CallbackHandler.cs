@@ -112,32 +112,16 @@ namespace TelegramBot
 
         private async Task ReplyToUserBuyTeklaLicense(CallbackQuery query, Message lastmessage, string button)
         {
-            var thisenum = typeof(UserButtonsTeklaMenu).Name + ".";
-            switch (button)
+            var data = FromStringToTeklaMenuEmun(button);
+            if(data == UserButtonsTeklaMenu.Back)
             {
-                case string data when data == thisenum + UserButtonsTeklaMenu.ProfileChooser.ToString():
-                    {
-
-                        break;
-                    }
-                case string data when data == thisenum + UserButtonsTeklaMenu.SteelSpecification.ToString():
-                    {
-                        TGBot.MyBot.Users[query.From.Id].LastMessage = await _shopFunctions.BuyTeklaLisence(query.From.Id, UserButtonsTeklaMenu.SteelSpecification);
-                        break;
-                    }
-                case string data when data == thisenum + UserButtonsTeklaMenu.ExcelReportGenerator.ToString():
-                    {
-
-                        break;
-                    }
-                case string data when data == thisenum + UserButtonsTeklaMenu.Back.ToString():
-                    {
-                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
-                        break;
-                    }
-                default:
-                    break;
+                TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditBuyLicenseMessage(query.From.Id, lastmessage.MessageId);
             }
+            else
+            {
+                TGBot.MyBot.Users[query.From.Id].LastMessage = await _shopFunctions.BuyLisence(query.From.Id, data);
+            }
+
         }
 
         private async Task ReplyToUserBuyRevitLicense(CallbackQuery query, Message lastmessage, string button)
@@ -167,6 +151,32 @@ namespace TelegramBot
                     }
                 default:
                     break;
+            }
+        }
+
+        private UserButtonsTeklaMenu FromStringToTeklaMenuEmun(string button)
+        {
+            var thisenum = typeof(UserButtonsTeklaMenu).Name + ".";
+            switch (button)
+            {
+                case string data when data == thisenum + UserButtonsTeklaMenu.ProfileChooser.ToString():
+                    {
+                        return UserButtonsTeklaMenu.ProfileChooser;
+                    }
+                case string data when data == thisenum + UserButtonsTeklaMenu.SteelSpecification.ToString():
+                    {
+                        return UserButtonsTeklaMenu.SteelSpecification;
+                    }
+                case string data when data == thisenum + UserButtonsTeklaMenu.ExcelReportGenerator.ToString():
+                    {
+                        return UserButtonsTeklaMenu.ExcelReportGenerator;
+                    }
+                case string data when data == thisenum + UserButtonsTeklaMenu.Back.ToString():
+                    {
+                        return UserButtonsTeklaMenu.Back;
+                    }
+                default:
+                    return UserButtonsTeklaMenu.Back;
             }
         }
     }
