@@ -25,13 +25,5 @@ namespace ServerBot.Repositories
                 return licenses;
             }
         }
-
-        //public static IEnumerable<LicenseEntity> CreateNewDefaultLicenses()
-        //{
-        //    //using (ApplicationContext context = new ApplicationContext())
-        //    //{
-        //    //    return context.Licenses;
-        //    //}
-        //}
     }
 }

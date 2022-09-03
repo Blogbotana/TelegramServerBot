@@ -121,9 +121,8 @@ namespace ServerBot.Repositories
                 }
                 else
                 {
-
+                    user.Licenses.ToList().Add(licenseEntity);
                 }
-                user.Licenses.ToList().Add(licenseEntity);
 
                 context.SaveChanges();
             }
