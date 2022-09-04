@@ -8,6 +8,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Server;
 using TelegramBot.DTO.Response;
 using System.Reflection.Metadata.Ecma335;
+using System.Configuration;
 
 namespace TelegramBot
 {
@@ -52,7 +53,7 @@ namespace TelegramBot
 
         private string GetShopToken()
         {
-            return System.IO.File.ReadAllText("payment.txt");
+            return ConfigurationManager.AppSettings["PaymentTokenTest"];
         }
 
         public async Task PreCheckoutQueryReceived(PreCheckoutQuery preCheckoutQuery)

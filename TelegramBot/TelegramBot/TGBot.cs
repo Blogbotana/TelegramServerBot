@@ -6,12 +6,13 @@ using Telegram.Bot.Types.Payments;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Server;
+using System.Configuration;
 
 namespace TelegramBot
 {
     public class TGBot
     {
-        public TelegramBotClient BotClient { get; } = new TelegramBotClient(System.IO.File.ReadAllText("token.txt"));
+        public TelegramBotClient BotClient { get; } = new TelegramBotClient(ConfigurationManager.AppSettings["TokenTGBot"]);
         public CancellationToken CancellToken { get; } = new CancellationToken();
         private LanguageFunction languageFunction = new LanguageFunction();
         private CallbackHandler callbackHandler = new CallbackHandler();

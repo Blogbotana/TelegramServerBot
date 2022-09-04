@@ -255,3 +255,4 @@ payment.txt
 server.txt
 YPlugins.ServerBot/ServerBot/Migrations/
 App.config
+appsettings.json
