@@ -78,16 +78,24 @@ namespace TelegramBot.Server
             {
                 IETF_LanguageTag = Code
             };
-            await HTTP.GetInstance.PUT(serverAddress + $"User/SetLangForUser?tgUserId={Id}", lang);
+            await HTTP.GetInstance.PUT(serverAddress + $"User/SetLangForUserByTgId?tgUserId={Id}", lang);
         }
 
-        public async Task UserBoughtThisLicense(string name)
+        public async Task UserBoughtLicenseForYear(string name, long tgUserId)
         {
             LicenseDTO license = new LicenseDTO()
             {
                 Name = name
             };
-            await HTTP.GetInstance.PUT(serverAddress + $"User/BoughtLicense", license);
+            await HTTP.GetInstance.PUT(serverAddress + $"User/BoughtLicenseForYear?tgUserId={tgUserId}", license);
+        }
+        public async Task UserBoughtLicenseForExactDays(string name, long tgUserId, int days)
+        {
+            LicenseDTO license = new LicenseDTO()
+            {
+                Name = name
+            };
+            await HTTP.GetInstance.PUT(serverAddress + $"User/BoughtLicenseForExactDays?tgUserId={tgUserId}&days={days}", license);
         }
 
         public async Task<IEnumerable<LicenseDTOResponse>> GetAllLicensesOfUser(long Id)
@@ -100,7 +108,7 @@ namespace TelegramBot.Server
         {
             if(email == null || name == null)
                 return;
-            await HTTP.GetInstance.PUT(serverAddress + $"User/Setdata?tgUserId={tgId}&email={email}&name={name}");
+            await HTTP.GetInstance.PUT(serverAddress + $"User/SetdataByTgId?tgUserId={tgId}&email={email}&name={name}");
         }
     }
 }
