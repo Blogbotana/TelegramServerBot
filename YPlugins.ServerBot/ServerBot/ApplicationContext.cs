@@ -20,7 +20,7 @@ namespace ServerBot
         {
             if (!optionBuilder.IsConfigured)
             {
-                optionBuilder.UseNpgsql(File.ReadAllText("server.txt"));
+                optionBuilder.UseNpgsql(ConfigurationManager.AppSetting["ServerSettings"]);
                 optionBuilder.EnableSensitiveDataLogging();
             }
         }
