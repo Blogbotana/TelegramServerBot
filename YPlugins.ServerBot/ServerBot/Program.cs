@@ -1,4 +1,7 @@
+using log4net.Config;
 using ServerBot;
+using ServerBot.Logger;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +11,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<ServerBot.ILogger>(_ => SimpleLogger.Current);
 
 var app = builder.Build();
 
@@ -19,6 +23,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(AppDomain.CurrentDomain.BaseDirectory + "web.config"));
 
 app.UseAuthorization();
 app.MapControllers();

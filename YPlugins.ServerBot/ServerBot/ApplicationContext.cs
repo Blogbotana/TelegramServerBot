@@ -23,6 +23,7 @@ namespace ServerBot
                 optionBuilder.UseNpgsql(File.ReadAllText("server.txt"));
                 optionBuilder.EnableSensitiveDataLogging();
             }
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
