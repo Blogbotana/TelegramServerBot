@@ -63,7 +63,7 @@ namespace TelegramBot
         public async Task<Message> SuccessfulPaymentRecived(SuccessfulPayment payment,long chatId)
         {
             await ServerAPI.GetInstance.SetEmailAndNameForUser(chatId, payment.OrderInfo.Email, payment.OrderInfo.Name);
-            await ServerAPI.GetInstance.UserBoughtThisLicense(payment.InvoicePayload);
+            await ServerAPI.GetInstance.UserBoughtLicenseForYear(payment.InvoicePayload, chatId);
 
             await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId, "Успешно, вы молодец", cancellationToken: TGBot.MyBot.CancellToken);
 
