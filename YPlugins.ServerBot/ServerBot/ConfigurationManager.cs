@@ -6,7 +6,7 @@ namespace ServerBot
 {
     public static class ConfigurationManager
     {
-        public static IConfiguration AppSetting { get; }
+        public static IConfiguration AppSetting { get; private set; }
         static ConfigurationManager()
         {
             AppSetting = new ConfigurationBuilder()

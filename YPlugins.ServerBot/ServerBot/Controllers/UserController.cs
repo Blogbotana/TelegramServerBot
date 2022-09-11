@@ -10,10 +10,10 @@ namespace ServerBot.Controllers
     [Route("User")]
     public class UserController
     {
-        private readonly ILogger<UserController> _logger;
+        private readonly ILogger _logger;
         private TgUserService userService = TgUserService.GetService();
 
-        public UserController(ILogger<UserController> logger)
+        public UserController(ILogger logger)
         {
             _logger = logger;
         }
@@ -21,65 +21,128 @@ namespace ServerBot.Controllers
         [HttpPost("Create")]
         public bool CreateUser([FromBody] UserDTO tgUser)
         {
-            return userService.CreateUser(tgUser);
+            try
+            {
+                return userService.CreateUser(tgUser);
+            }
+            catch (Exception e1)
+            {
+                _logger.Error("Error CreateUser", e1);
+                return false;
+            }
         }
 
         //TODO fix Error: Don't amswer LanguageCode (this is null) 
         [HttpGet("GetUserByTG")]
         public UserDTOResponse? GetUser([FromQuery] long tgUserId)
         {
-            return userService.GetUserByTgId(tgUserId);
+            try
+            {
+                return userService.GetUserByTgId(tgUserId);
+            }
+            catch (Exception e1)
+            {
+                _logger.Error("Error GetUserByTG?tgUserId=" + tgUserId.ToString(), e1);
+                return null;
+            }
+            
         }
 
         //TODO fix Error: Don't amswer LanguageCode (this is null) 
         [HttpGet("GetUserByEmail")]
         public UserDTOResponse? GetUser([FromQuery] string email)
         {
-            return userService.GetUserByEmail(email);
-        }
-
-        [HttpGet("GetUserLanguage")]
-        public LanguageDTOResponse? GetUserLanguage([FromQuery] long tgUserId)
-        {
-            return userService.GetUserLanguageByTgId(tgUserId);
+            try
+            {
+                return userService.GetUserByEmail(email);
+            }
+            catch (Exception e1)
+            {
+                _logger.Error("Error GetUserByEmail?email=" + email, e1);
+                return null;
+            }
         }
 
         [HttpPut("SetLangForUserByTgId")]
         public void SetUserLanguage([FromQuery] long tgUserId, [FromBody] LanguageDTO language)
         {
-            userService.SetThisLanguageForUser(tgUserId, language);
+            try
+            {
+                userService.SetThisLanguageForUser(tgUserId, language);
+            }
+            catch (Exception e1)
+            {
+                _logger.Error("Error SetLangForUserByTgId?tgUserId=" + tgUserId.ToString(), e1);
+            }
         }
 
         [HttpPut("SetLangForUserByEmail")]
         public void SetUserLanguage([FromQuery] string email, [FromBody] LanguageDTO language)
         {
-            userService.SetThisLanguageForUser(email, language);
+            try
+            {
+                userService.SetThisLanguageForUser(email, language);
+            }
+            catch (Exception e1)
+            {
+                _logger.Error("Error SetLangForUserByEmail?email=" + email, e1);
+            }
         }
 
         [HttpPut("BoughtLicenseForYear")]//TODO need to protect from hack
         public void UserBoughtLicenseForYear([FromQuery] long tgUserId, [FromBody] LicenseDTO license)
         {
-            userService.ThisUserBoughtThisLicence(tgUserId, license, 365);
+            try
+            {
+                userService.ThisUserBoughtThisLicence(tgUserId, license, 365);
+            }
+            catch (Exception e1)
+            {
+                _logger.Error("Error BoughtLicenseForYear?tgUserId=" + tgUserId.ToString(), e1);
+            }
         }
 
 
-        [HttpPut("BoughtLicenseForExactDays")]//TODO need to protect from hack
+        [HttpPut("BoughtLicenseForExactDays")]//TODO securety with JWT token
         public void UserBoughtLicenseForExactDays([FromQuery] long tgUserId, [FromQuery] int days, [FromBody] LicenseDTO license)
         {
-            //TODO securety with JWT token
-            userService.ThisUserBoughtThisLicence(tgUserId, license, days);
+            try
+            {
+                if (days > 0)
+                    userService.ThisUserBoughtThisLicence(tgUserId, license, days);
+            }
+            catch (Exception e1)
+            {
+                _logger.Error("Error BoughtLicenseForExactDays?tgUserId=" + tgUserId.ToString(), e1);
+            }
         }
 
         [HttpPut("SetdataByTgId")]
         public void SetThisEmailAndNameForUser([FromQuery] long tgUserId, [FromQuery] string email, [FromQuery] string name)
         {
-            userService.SetEmailAndNameForTgUser(tgUserId, email, name);
+            try
+            {
+                userService.SetEmailAndNameForTgUser(tgUserId, email, name);
+            }
+            catch (Exception e1)
+            {
+                _logger.Error("Error SetdataByTgId?tgUserId=" + tgUserId.ToString(), e1);
+            }
+            
         }
 
         [HttpPut("SetdataByEmail")]
         public void SetThisEmailAndNameForUser([FromQuery] string email, [FromQuery] long tgUserId, [FromQuery] string name)
         {
-            userService.SetTgIdAndNameForEmailUser( email, tgUserId, name);
+            try
+            {
+                userService.SetTgIdAndNameForEmailUser(email, tgUserId, name);
+            }
+            catch (Exception e1)
+            {
+                _logger.Error("Error SetdataByEmail?email=" + email, e1);
+            }
+            
         }
     }
 }
