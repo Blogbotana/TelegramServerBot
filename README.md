@@ -8,14 +8,8 @@
 
 </p>
 
-###Tasklist:
+### Tasklist:
 
 - [ ] Make logger
-- [x] Make app.config
-- [x] Make work with JWT token
-- [x] Mars
-- [ ] Jupiter
-- [ ] Saturn
-- [ ] Uranus
-- [ ] Neptune
-- [ ] Comet Haley
+- [ ] Make app.config
+- [ ] Make work with JWT token
