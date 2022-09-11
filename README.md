@@ -1,7 +1,21 @@
-# TelegramServerBot
+<br/>
+<p align="center">
+  <a href="https://github.com/Blogbotana/Telegram server Bot">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  </a>
 
-Tasklist:
-connect server with tg web bot
-make work with JWT token
-make app.config
-make logger
+  <h3 align="center">Telegram Server Bot</h3>
+
+</p>
+
+###Tasklist:
+
+- [ ] Make logger
+- [x] Make app.config
+- [x] Make work with JWT token
+- [x] Mars
+- [ ] Jupiter
+- [ ] Saturn
+- [ ] Uranus
+- [ ] Neptune
+- [ ] Comet Haley
