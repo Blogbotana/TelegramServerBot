@@ -17,3 +17,4 @@
 - [ ] Make all licenses
 - [ ] Add request for all licenses of user
 - [ ] Make serrialization of dictionary when console is closed
+- [ ] Make localizations
