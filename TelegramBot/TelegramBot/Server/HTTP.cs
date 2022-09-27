@@ -1,17 +1,4 @@
-﻿using ServerBot.DTO;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Net.Mime;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Json;
 
 namespace TelegramBot.Server
 {
@@ -30,7 +17,7 @@ namespace TelegramBot.Server
 
         ~HTTP()
         {
-            httpClient.Dispose();    
+            httpClient.Dispose();
         }
 
         public static HTTP GetInstance
@@ -52,9 +39,9 @@ namespace TelegramBot.Server
             try
             {
                 var response = await httpClient.GetAsync(url);
-                if(!response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
                     Console.WriteLine(response.ReasonPhrase + " in GET " + url + "\tStatus\t" + response.StatusCode.ToString());
-                
+
                 return await response.Content.ReadAsStringAsync();
             }
             catch (HttpRequestException ex)

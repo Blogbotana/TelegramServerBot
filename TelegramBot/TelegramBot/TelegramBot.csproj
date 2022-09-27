@@ -15,6 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Localization">
+      <HintPath>..\..\libs\Localization.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Logger.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

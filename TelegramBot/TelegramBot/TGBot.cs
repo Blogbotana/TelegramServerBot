@@ -1,13 +1,12 @@
-﻿using Telegram.Bot;
+﻿using System.Configuration;
+using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Payments;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
-using TelegramBot.Server;
-using System.Configuration;
+using Telegram.Bot.Types.Payments;
 using TelegramBot.Logger;
+using TelegramBot.Server;
 
 namespace TelegramBot
 {
@@ -30,7 +29,7 @@ namespace TelegramBot
 
         }
 
-        public static TGBot MyBot 
+        public static TGBot MyBot
         {
             get
             {
@@ -107,7 +106,7 @@ namespace TelegramBot
 
         private async Task<Message> BotOnMessageReceived(Message message)
         {
-            if(message.ReplyToMessage != null && (Users[message.ReplyToMessage.Chat.Id].IsNeedSupport || supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id)))
+            if (message.ReplyToMessage != null && (Users[message.ReplyToMessage.Chat.Id].IsNeedSupport || supportFunction.AdminID.Contains(message.ReplyToMessage.Chat.Id)))
             {
                 return await supportFunction.ReplyToUserTheAnswerFromSupport(message);
             }
@@ -150,12 +149,12 @@ namespace TelegramBot
                             return await supportFunction.SupportMessageToAdmin(message);
                         }
 
-                        if(message.SuccessfulPayment != null)
+                        if (message.SuccessfulPayment != null)
                         {
                             return await shopFunctions.SuccessfulPaymentRecived(message.SuccessfulPayment, message.Chat.Id);
                         }
 
-                        if(message.Caption != null)
+                        if (message.Caption != null)
                         {
                             if (message.Caption.ToLower().StartsWith("/send"))
                             {

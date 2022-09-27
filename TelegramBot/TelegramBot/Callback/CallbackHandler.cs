@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using Localization;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramBot.Server;
 
@@ -17,8 +18,8 @@ namespace TelegramBot
                     {
                         await ServerAPI.GetInstance.SetThisLanguageForUser(query.From.Id, language.Replace("Lang_", ""));
                         await TGBot.MyBot.BotClient.DeleteMessageAsync(query.From.Id, lastmessage.MessageId, TGBot.MyBot.CancellToken);
+                        TGBot.MyBot.Users[query.From.Id].LanguageCode = language.Replace("Lang_", "");
                         TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.SendHelloMessage(query.From.Id);
-
                         break;
                     }
                 case string button when button.StartsWith(typeof(UserButtonsMainMenu).Name):
@@ -63,7 +64,8 @@ namespace TelegramBot
                     }
                 case string result when result == thisenum + UserButtonsMainMenu.DataBase.ToString():
                     {
-                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditCustomMessage(query.From.Id, lastmessage.MessageId, "Раздел в разработке");
+                        TGBot.MyBot.Users[query.From.Id].LastMessage = await dialog.EditCustomMessage(query.From.Id, lastmessage.MessageId, 
+                            "tg_Development");
                         break;
                     }
                 case string result when result == thisenum + UserButtonsMainMenu.UserButtonsBuyLicenseMenu.ToString():
