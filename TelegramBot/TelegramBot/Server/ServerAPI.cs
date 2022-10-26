@@ -1,14 +1,9 @@
 ﻿using Newtonsoft.Json;
 using ServerBot.DTO;
 using ServerBot.DTO.Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using TelegramBot.DTO.Response;
+using TelegramBot.Logger;
 
 namespace TelegramBot.Server
 {
@@ -39,7 +34,7 @@ namespace TelegramBot.Server
                 }
                 catch (Exception e1)
                 {
-                    Console.WriteLine(e1.ToString());
+                    BotLogger.GetInstance().Fatal(e1);
                 }
                 return instance;
             }
@@ -47,68 +42,132 @@ namespace TelegramBot.Server
 
         public void RegisterUser(User userfromTG)
         {
-            UserDTO userDTO = new UserDTO()
+            try
             {
-                ComputerInformation = null,
-                Email = null,
-                FirstName = userfromTG.FirstName,
-                LastName = userfromTG.LastName,
-                LanguageCode = userfromTG.LanguageCode,
-                TgId = userfromTG.Id
-            };
+                UserDTO userDTO = new UserDTO()
+                {
+                    ComputerInformation = null,
+                    Email = null,
+                    FirstName = userfromTG.FirstName,
+                    LastName = userfromTG.LastName,
+                    LanguageCode = userfromTG.LanguageCode,
+                    TgId = userfromTG.Id
+                };
 
-            var responce = HTTP.GetInstance.POST(serverAddress + "User/Create", userDTO);
+                var responce = HTTP.GetInstance.POST(serverAddress + "User/Create", userDTO);
+            }
+            catch (Exception e1)
+            {
+                BotLogger.GetInstance().Error("RegisterUser", e1);
+            }
         }
 
         public async Task<UserDTOResponse> GetUserByTgId(long Id)
         {
-            var responce = await HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}");
-            return JsonConvert.DeserializeObject<UserDTOResponse>(responce);
+            try
+            {
+                var responce = await HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}");
+                return JsonConvert.DeserializeObject<UserDTOResponse>(responce);
+            }
+            catch (Exception e1)
+            {
+                BotLogger.GetInstance().Error("GetUserByTgId Id=" + Id.ToString(), e1);
+                throw e1;
+            }
         } 
 
         public async Task<LanguageDTOResponse> GetUserLanguage(long Id)
         {
-            var responce = await HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}");
-            return JsonConvert.DeserializeObject<LanguageDTOResponse>(responce);
+            try
+            {
+                var responce = await HTTP.GetInstance.GET(serverAddress + $"User/GetUserByTG?tgUserId={Id}");
+                return JsonConvert.DeserializeObject<LanguageDTOResponse>(responce);
+            }
+            catch (Exception e1)
+            {
+                BotLogger.GetInstance().Error("GetUserLanguage Id=" + Id.ToString(), e1);
+                throw e1;
+            }
         }
 
         public async Task SetThisLanguageForUser(long Id, string Code)
         {
-            LanguageDTO lang = new LanguageDTO()
+            try
             {
-                IETF_LanguageTag = Code
-            };
-            await HTTP.GetInstance.PUT(serverAddress + $"User/SetLangForUserByTgId?tgUserId={Id}", lang);
+                LanguageDTO lang = new LanguageDTO()
+                {
+                    IETF_LanguageTag = Code
+                };
+                await HTTP.GetInstance.PUT(serverAddress + $"User/SetLangForUserByTgId?tgUserId={Id}", lang);
+            }
+            catch (Exception e1)
+            {
+                BotLogger.GetInstance().Error("SetThisLanguageForUser Id=" + Id.ToString(), e1);
+                throw e1;
+            }
         }
 
-        public async Task UserBoughtLicenseForYear(string name, long tgUserId)
+        public async Task<HttpResponseMessage> UserBoughtLicenseForYear(string name, long tgUserId)
         {
-            LicenseDTO license = new LicenseDTO()
+            try
             {
-                Name = name
-            };
-            await HTTP.GetInstance.PUT(serverAddress + $"User/BoughtLicenseForYear?tgUserId={tgUserId}", license);
+                LicenseDTO license = new LicenseDTO()
+                {
+                    Name = name
+                };
+                return await HTTP.GetInstance.PUT(serverAddress + $"User/BoughtLicenseForYear?tgUserId={tgUserId}", license);
+            }
+            catch (Exception e1)
+            {
+                BotLogger.GetInstance().Error("UserBoughtLicenseForYear tgUserId=" + tgUserId.ToString(), e1);
+                return null;
+            }
         }
-        public async Task UserBoughtLicenseForExactDays(string name, long tgUserId, int days)
+        public async Task<HttpResponseMessage> UserBoughtLicenseForExactDays(string name, long tgUserId, int days)
         {
-            LicenseDTO license = new LicenseDTO()
+            try
             {
-                Name = name
-            };
-            await HTTP.GetInstance.PUT(serverAddress + $"User/BoughtLicenseForExactDays?tgUserId={tgUserId}&days={days}", license);
+                LicenseDTO license = new LicenseDTO()
+                {
+                    Name = name
+                };
+                return await HTTP.GetInstance.PUT(serverAddress + $"User/BoughtLicenseForExactDays?tgUserId={tgUserId}&days={days}", license);
+            }
+            catch (Exception e1)
+            {
+                BotLogger.GetInstance().Error("UserBoughtLicenseForExactDays tgUserId=" + tgUserId.ToString(), e1);
+                return null;
+            }
+            
         }
 
         public async Task<IEnumerable<LicenseDTOResponse>> GetAllLicensesOfUser(long Id)
         {
-            UserDTOResponse user = await GetUserByTgId(Id);
-            return user.Licenses;
+            try
+            {
+                UserDTOResponse user = await GetUserByTgId(Id);
+                return user.Licenses;
+            }
+            catch (Exception e1)
+            {
+                BotLogger.GetInstance().Error("GetAllLicensesOfUser Id=" + Id.ToString(), e1);
+                return null;
+            }
         }
 
-        public async Task SetEmailAndNameForUser(long tgId, string? email, string? name)
+        public async Task<HttpResponseMessage> SetEmailAndNameForUser(long tgId, string? email, string? name)
         {
-            if(email == null || name == null)
-                return;
-            await HTTP.GetInstance.PUT(serverAddress + $"User/SetdataByTgId?tgUserId={tgId}&email={email}&name={name}");
+            try
+            {
+                if (email == null || name == null)
+                    return null;
+                return await HTTP.GetInstance.PUT(serverAddress + $"User/SetdataByTgId?tgUserId={tgId}&email={email}&name={name}");
+            }
+            catch (Exception e1)
+            {
+                BotLogger.GetInstance().Error("SetEmailAndNameForUser tgId=" + tgId.ToString(), e1);
+                return null;
+            }
         }
     }
 }

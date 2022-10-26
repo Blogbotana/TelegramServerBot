@@ -1,10 +1,4 @@
-﻿using System;
-using Telegram.Bot;
-using Telegram.Bot.Extensions.Polling;
-using Telegram.Bot.Exceptions;
-using Telegram.Bot.Args;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
+﻿using log4net.Config;
 
 namespace TelegramBot
 {
@@ -12,6 +6,7 @@ namespace TelegramBot
     {
         static void Main()
         {
+            XmlConfigurator.ConfigureAndWatch(new FileInfo(AppDomain.CurrentDomain.BaseDirectory + "Logger.config"));
             TGBot bot = TGBot.MyBot;
             bot.Launch();
             Console.ReadLine();

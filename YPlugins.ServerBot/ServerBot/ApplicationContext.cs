@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging.Console;
 using ServerBot.Entities;
+using ServerBot.Logger;
 using System.IO;
 
 namespace ServerBot
@@ -15,11 +18,11 @@ namespace ServerBot
 
         }
 
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionBuilder)
         {
             if (!optionBuilder.IsConfigured)
             {
+                optionBuilder.LogTo(ServerLogger.GetInstance().Info, new[] { RelationalEventId.CommandExecuted }, LogLevel.Information, DbContextLoggerOptions.None);
                 optionBuilder.UseNpgsql(ConfigurationManager.AppSetting["ServerSettings"]);
                 optionBuilder.EnableSensitiveDataLogging();
             }
@@ -32,7 +35,6 @@ namespace ServerBot
 
             modelBuilder.Entity<LicenseEntity>()
                 .HasData(GetAllLicenses());
-
         }
 
         private LanguageEntity[] GetAllLanguages()

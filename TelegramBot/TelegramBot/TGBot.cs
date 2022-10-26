@@ -7,6 +7,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Server;
 using System.Configuration;
+using TelegramBot.Logger;
 
 namespace TelegramBot
 {
@@ -20,6 +21,7 @@ namespace TelegramBot
         private SupportFunction supportFunction = new SupportFunction();
         private ShopFunctions shopFunctions = new ShopFunctions();
         private static TGBot? _myBot;
+        private ILogger _logger = BotLogger.GetInstance();
         //TODO сделать проверку последнего сообщения от пользователя in query
         public Dictionary<long, UserInfo> Users { get; set; } = new Dictionary<long, UserInfo>();//TODO сделать при завершении консоли сохранение всех юзеров
 
@@ -51,6 +53,7 @@ namespace TelegramBot
             BotClient.SetMyCommandsAsync(GetBotsCommands(), scope: new BotCommandScopeDefault(), cancellationToken: CancellToken);
 
             var me = BotClient.GetMeAsync().Result;
+            _logger.Info("Bot " + me + "started successfully");
             Console.WriteLine($"Start listening for @{me.Username}");
         }
 
@@ -98,7 +101,7 @@ namespace TelegramBot
                 _ => exception.ToString()
             };
 
-            Console.WriteLine(ErrorMessage);
+            BotLogger.GetInstance().Error(ErrorMessage);
             return Task.CompletedTask;
         }
 
