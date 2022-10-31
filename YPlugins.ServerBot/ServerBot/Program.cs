@@ -18,7 +18,7 @@ builder.Services.AddAuthentication(options =>
     {
         jwtOptions.TokenValidationParameters = new TokenValidationParameters()
         {
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("cQfTjWnZr4u7w!z%C*F-JaNdRgUkXp2s")),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ServerBot.ConfigurationManager.AppSetting["JwtToken"])),
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidIssuer = "http://localhost:5007",

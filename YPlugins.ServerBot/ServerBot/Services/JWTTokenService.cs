@@ -7,7 +7,7 @@ namespace ServerBot.Services
 {
     public class JWTTokenService
     {
-        private const string Secret_Key = "cQfTjWnZr4u7w!z%C*F-JaNdRgUkXp2s";
+        private static readonly string Secret_Key = ConfigurationManager.AppSetting["JwtToken"];
         private static SymmetricSecurityKey SymmetricSecurityKey { get; } = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret_Key));
         private static JWTTokenService? tokenService;
         private JWTTokenService()
@@ -19,7 +19,7 @@ namespace ServerBot.Services
             return tokenService;
         }
 
-        public string GenerateToken(UserDTO userDTO)
+        public string GenerateToken()
         {
             var credentials = new SigningCredentials(SymmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
@@ -29,9 +29,9 @@ namespace ServerBot.Services
 
             var payload = new JwtPayload
             {
-                { "sub", "UserDTOResponse"},
-                { "Name", userDTO.FirstName},
-                { "Email", userDTO.Email},
+                { "sub", "TelegramBot"},
+                { "Name", "AdminBot"},
+                //{ "Email", userDTO.Email},
                 { "exp", totalSeconds},
                 { "iss", "http://localhost:5007"},
                 { "aud", "http://localhost:5007" }
