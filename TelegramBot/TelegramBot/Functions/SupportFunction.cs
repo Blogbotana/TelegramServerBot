@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Localization;
+using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
@@ -18,7 +19,7 @@ namespace TelegramBot
             TGBot.MyBot.Users[IdChat].IsNeedSupport = true;
 
             return await TGBot.MyBot.BotClient.SendTextMessageAsync(IdChat, 
-                text: Localization.GetTranslation("Опишите вашу проблему подробно и если обязательно, прикрепите скрины ошибок, без них будет сложно вам помочь"),
+                text: Translator.GetLocalization(TGBot.MyBot.Users[IdChat].LanguageCode).GetTranslate("tg_SupportMsg"),
                 cancellationToken: TGBot.MyBot.CancellToken);
         }
 
@@ -27,7 +28,7 @@ namespace TelegramBot
             TGBot.MyBot.Users[IdChat].IsNeedSupport = true;
 
             return await TGBot.MyBot.BotClient.EditMessageTextAsync(IdChat, msgId, 
-                text: Localization.GetTranslation("Опишите вашу проблему подробно и если обязательно, прикрепите скрины ошибок, без них будет сложно вам помочь"),
+                text: Translator.GetLocalization(TGBot.MyBot.Users[IdChat].LanguageCode).GetTranslate("tg_SupportMsg"),
                 cancellationToken: TGBot.MyBot.CancellToken);
         }
 
@@ -36,7 +37,7 @@ namespace TelegramBot
             TGBot.MyBot.Users[IdChat].IsNeedSupport = true;
 
             return await TGBot.MyBot.BotClient.SendTextMessageAsync(IdChat,
-                text: Localization.GetTranslation("Опишите вашу проблему подробно и если обязательно, прикрепите скрины ошибок, без них будет сложно вам помочь"),
+                text: Translator.GetLocalization(TGBot.MyBot.Users[IdChat].LanguageCode).GetTranslate("tg_SupportMsg"),
                 cancellationToken: TGBot.MyBot.CancellToken);
         }
 
@@ -61,7 +62,7 @@ namespace TelegramBot
             if(message.Text != null)
             {
                 Encoding encoding = Encoding.UTF8;
-                var array = encoding.GetBytes(Localization.GetTranslation("Спасибо"));
+                var array = encoding.GetBytes(Translator.GetLocalization(TGBot.MyBot.Users[message.Chat.Id].LanguageCode).GetTranslate("Thanks"));
                 string thanks = Encoding.UTF8.GetString(array).ToLower();
                 string msg = message.Text.ToString().ToLower();
 

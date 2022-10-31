@@ -1,14 +1,10 @@
-﻿using Telegram.Bot;
-using Telegram.Bot.Exceptions;
-using Telegram.Bot.Extensions.Polling;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.Payments;
-using Telegram.Bot.Types.InputFiles;
-using Telegram.Bot.Types.ReplyMarkups;
-using TelegramBot.Server;
-using TelegramBot.DTO.Response;
-using System.Reflection.Metadata.Ecma335;
+﻿using Localization;
 using System.Configuration;
+using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.InputFiles;
+using Telegram.Bot.Types.Payments;
+using TelegramBot.Server;
 
 namespace TelegramBot
 {
@@ -16,8 +12,8 @@ namespace TelegramBot
     {
         public async Task<Message> BuyLisence(long IdChat, UserButtonsTeklaMenu userButtons)
         {
-            return await TGBot.MyBot.BotClient.SendInvoiceAsync(IdChat, GetTitleOfLicense(userButtons), 
-                GetDescriptionOfLecense(userButtons), userButtons.ToString(),
+            return await TGBot.MyBot.BotClient.SendInvoiceAsync(IdChat, GetTitleOfLicense(userButtons),
+                GetDescriptionOfLecense(userButtons, TGBot.MyBot.Users[IdChat].LanguageCode), userButtons.ToString(),
                 GetShopToken(), "RUB", GetShopCart(userButtons),
                 photoUrl: GetUrlOfLicense(userButtons), photoHeight: 248, photoWidth: 413,//Depends on picture that will be for plugin
                 needName: true, needEmail: true, sendEmailToProvider: true,
@@ -61,12 +57,12 @@ namespace TelegramBot
             await TGBot.MyBot.BotClient.AnswerPreCheckoutQueryAsync(preCheckoutQuery.Id, TGBot.MyBot.CancellToken);
         }
 
-        public async Task<Message> SuccessfulPaymentRecived(SuccessfulPayment payment,long chatId)
+        public async Task<Message> SuccessfulPaymentRecived(SuccessfulPayment payment, long chatId)
         {
             await ServerAPI.GetInstance.SetEmailAndNameForUser(chatId, payment.OrderInfo.Email, payment.OrderInfo.Name);
             await ServerAPI.GetInstance.UserBoughtLicenseForYear(payment.InvoicePayload, chatId);
 
-            await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId, "Успешно, вы молодец", cancellationToken: TGBot.MyBot.CancellToken);
+            await TGBot.MyBot.BotClient.SendTextMessageAsync(chatId, Translator.GetLocalization(TGBot.MyBot.Users[chatId].LanguageCode).GetTranslate("tg_SuccessPayment"), cancellationToken: TGBot.MyBot.CancellToken); ;
 
             InputOnlineFile stiker = new InputOnlineFile("https://tlgrm.ru/_/stickers/5ba/fb7/5bafb75c-6bee-39e0-a4f3-a23e523feded/192/25.webp");
             return await TGBot.MyBot.BotClient.SendStickerAsync(chatId, stiker, cancellationToken: TGBot.MyBot.CancellToken);
@@ -87,16 +83,16 @@ namespace TelegramBot
             }
         }
 
-        private string GetDescriptionOfLecense(UserButtonsTeklaMenu userButtons)
+        private string GetDescriptionOfLecense(UserButtonsTeklaMenu userButtons, string lang)
         {
             switch (userButtons)
             {
                 case UserButtonsTeklaMenu.ProfileChooser:
-                    return "This is plugin that helps you to choose profiles quicker. More info: https://telegra.ph/Profile-Chooser-Plugin-08-30";//TODO Understand how to work with links
+                    return Translator.GetLocalization(lang).GetTranslate("tg_discriptionPluginProfileChooser");//TODO Understand how to work with links
                 case UserButtonsTeklaMenu.SteelSpecification:
-                    return "This is plugin for analyzing and changing model. You can create your own specifications also";
+                    return Translator.GetLocalization(lang).GetTranslate("tg_discriptionSteelSpecification");
                 case UserButtonsTeklaMenu.ExcelReportGenerator:
-                    return "This is plugin for generate rpt file from existing excel file for Tekla reports";
+                    return Translator.GetLocalization(lang).GetTranslate("tg_discriptionExcelReportGenerator");
                 default:
                     return "";
             }

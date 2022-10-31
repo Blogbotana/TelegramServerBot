@@ -74,7 +74,7 @@ namespace TelegramBot.Server
                 BotLogger.GetInstance().Error("GetUserByTgId Id=" + Id.ToString(), e1);
                 throw e1;
             }
-        } 
+        }
 
         public async Task<LanguageDTOResponse> GetUserLanguage(long Id)
         {
@@ -138,7 +138,7 @@ namespace TelegramBot.Server
                 BotLogger.GetInstance().Error("UserBoughtLicenseForExactDays tgUserId=" + tgUserId.ToString(), e1);
                 return null;
             }
-            
+
         }
 
         public async Task<IEnumerable<LicenseDTOResponse>> GetAllLicensesOfUser(long Id)
