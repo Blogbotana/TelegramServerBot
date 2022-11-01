@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using ServerBot.DTO;
 using ServerBot.DTO.Response;
+using System.Configuration;
 using Telegram.Bot.Types;
 using TelegramBot.DTO.Response;
 using TelegramBot.Logger;
@@ -38,6 +39,14 @@ namespace TelegramBot.Server
                 }
                 return instance;
             }
+        }
+
+        public async Task AuthorizeBot()
+        {
+            PasswordDTO password = new PasswordDTO { Password = ConfigurationManager.AppSettings["Password"] };
+            var response = await HTTP.GetInstance.GET(serverAddress + "User/jwtToken", password);
+            HTTP.SetJWTToken(response);
+            await Task.CompletedTask;
         }
 
         public void RegisterUser(User userfromTG)
