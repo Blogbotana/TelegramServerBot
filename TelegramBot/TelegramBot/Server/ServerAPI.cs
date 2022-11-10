@@ -44,7 +44,7 @@ namespace TelegramBot.Server
         public async Task AuthorizeBot()
         {
             PasswordDTO password = new PasswordDTO { Password = ConfigurationManager.AppSettings["Password"] };
-            var response = await HTTP.GetInstance.GET(serverAddress + "User/jwtToken", password);
+            var response = await HTTP.GetInstance.POST(serverAddress + "User/jwtToken", password);
             HTTP.SetJWTToken(response);
             await Task.CompletedTask;
         }

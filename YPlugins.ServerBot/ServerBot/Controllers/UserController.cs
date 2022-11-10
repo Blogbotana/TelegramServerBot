@@ -32,7 +32,7 @@ namespace ServerBot.Controllers
                 return false;
             }
         }
-        [HttpGet("jwtToken")]
+        [HttpPost("jwtToken")]
         public string GetToken([FromBody] PasswordDTO objectPassword)
         {
             if (objectPassword.Password == ConfigurationManager.AppSetting["Password"])
