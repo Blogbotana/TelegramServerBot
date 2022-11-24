@@ -5,7 +5,7 @@ namespace ServerBot.Logger
     public class ServerLogger : ILogger
     {
         private readonly ILog _logger4net = LogManager.GetLogger(typeof (ServerLogger));
-        private static ServerLogger _instance;
+        private static ServerLogger? _instance;
 
         public static ServerLogger GetInstance()
         {

@@ -26,7 +26,7 @@ namespace TelegramBot
 
         private TGBot()
         {
-
+            Task.Run(() => ServerAPI.GetInstance.AuthorizeBot());
         }
 
         public static TGBot MyBot

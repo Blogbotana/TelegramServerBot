@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ServerBot.DTO;
-using ServerBot.DTO.Response;
+using ServerBot.DTO.Request;
 using ServerBot.Services;
-using System.Data;
 
 namespace ServerBot.Controllers
 {
@@ -12,6 +12,7 @@ namespace ServerBot.Controllers
     {
         private readonly ILogger _logger;
         private TgUserService userService = TgUserService.GetService();
+        private JWTTokenService jwtTokenService = JWTTokenService.GetService();
 
         public UserController(ILogger logger)
         {
@@ -31,7 +32,14 @@ namespace ServerBot.Controllers
                 return false;
             }
         }
-
+        [HttpPost("jwtToken")]
+        public string GetToken([FromBody] PasswordDTO objectPassword)
+        {
+            if (objectPassword.Password == ConfigurationManager.AppSetting["Password"])
+                return jwtTokenService.GenerateToken();
+            else
+                return "";
+        }
         //TODO fix Error: Don't amswer LanguageCode (this is null) 
         [HttpGet("GetUserByTG")]
         public UserDTOResponse? GetUser([FromQuery] long tgUserId)
@@ -45,7 +53,7 @@ namespace ServerBot.Controllers
                 _logger.Error("Error GetUserByTG?tgUserId=" + tgUserId.ToString(), e1);
                 return null;
             }
-            
+
         }
 
         //TODO fix Error: Don't amswer LanguageCode (this is null) 
@@ -89,7 +97,8 @@ namespace ServerBot.Controllers
             }
         }
 
-        [HttpPut("BoughtLicenseForYear")]//TODO need to protect from hack
+        [HttpPut("BoughtLicenseForYear")]
+        [Authorize]
         public void UserBoughtLicenseForYear([FromQuery] long tgUserId, [FromBody] LicenseDTO license)
         {
             try
@@ -103,7 +112,8 @@ namespace ServerBot.Controllers
         }
 
 
-        [HttpPut("BoughtLicenseForExactDays")]//TODO securety with JWT token
+        [HttpPut("BoughtLicenseForExactDays")]
+        [Authorize]
         public void UserBoughtLicenseForExactDays([FromQuery] long tgUserId, [FromQuery] int days, [FromBody] LicenseDTO license)
         {
             try
@@ -128,7 +138,7 @@ namespace ServerBot.Controllers
             {
                 _logger.Error("Error SetdataByTgId?tgUserId=" + tgUserId.ToString(), e1);
             }
-            
+
         }
 
         [HttpPut("SetdataByEmail")]
@@ -142,7 +152,7 @@ namespace ServerBot.Controllers
             {
                 _logger.Error("Error SetdataByEmail?email=" + email, e1);
             }
-            
+
         }
     }
 }
