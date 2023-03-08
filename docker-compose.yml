@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  telegram:
+    build: ./TelegramBot/TelegramBot
+    ports:
+      - '8080:80'
+      - '8081:443'
+    depends_on:
+      - backend
+  backend:
+    build: ./YPlugins.ServerBot/ServerBot
+    ports:
+      - '5555:5000'
