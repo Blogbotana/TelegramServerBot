@@ -1,14 +1,22 @@
 version: '3'
 
 services:
+  backend:
+    build: ./YPlugins.ServerBot
+    ports:
+      - '8082:80'
+    environment:
+      - 'ASPNETCORE_URLS=http://+:80'
+  #    command: 'tail -f /dev/null'
   telegram:
-    build: ./TelegramBot/TelegramBot
+    build: ./TelegramBot
     ports:
       - '8080:80'
       - '8081:443'
+    environment:
+      - 'SERVER_ADRESS=http://localhost:8082/'
+    #    command: 'tail -f /dev/null'
+    tty: true
+    stdin_open: true
     depends_on:
       - backend
-  backend:
-    build: ./YPlugins.ServerBot/ServerBot
-    ports:
-      - '5555:5000'

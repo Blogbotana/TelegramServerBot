@@ -1,7 +1,10 @@
 {
   "profiles": {
     "TelegramBot": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "environmentVariables": {
+        "SERVER_ADRESS": "http://localhost:8080/"
+      }
     },
     "Docker": {
       "commandName": "Docker"
