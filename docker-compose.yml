@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 
 services:
   backend:
@@ -14,7 +14,7 @@ services:
       - '8080:80'
       - '8081:443'
     environment:
-      - 'SERVER_ADRESS=http://localhost:8082/'
+      - 'SERVER_ADRESS=http://backend:80/'
     #    command: 'tail -f /dev/null'
     tty: true
     stdin_open: true
