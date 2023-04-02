@@ -36,6 +36,8 @@ namespace TelegramBot.Server
 
         public static void SetJWTToken(string token)
         {
+            if (String.IsNullOrEmpty(token))
+                return;
             httpClient.DefaultRequestHeaders.Remove("Authorization");
             httpClient.DefaultRequestHeaders.Add("Authorization", token);
         }

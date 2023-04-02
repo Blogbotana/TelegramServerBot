@@ -14,7 +14,7 @@ namespace ServerBot.Services
         private static MapperConfiguration fromLanguageEnityToLanguageDTOResponse = new MapperConfiguration(ctg => ctg.CreateMap<LanguageEntity, LanguageDTOResponse>());
         private static MapperConfiguration fromLanguageDTOToLanguageEntity = new MapperConfiguration(ctg => ctg.CreateMap<LanguageDTO, LanguageEntity>());
         //private static MapperConfiguration fromLicenseDTOToLicenseEntity = new MapperConfiguration(ctg => ctg.CreateMap<LicenseDTO, LicenseEntity>());
-        private static MapperConfiguration fromUserEntityToUserDTOResponse = new MapperConfiguration(ctg => ctg.CreateMap<UserEntity, UserDTOResponse>().ForMember(dest => dest.Language, opt => opt.MapFrom(src => src.Language)));
+        private static MapperConfiguration fromUserEntityToUserDTOResponse = new MapperConfiguration(ctg => ctg.CreateMap<UserEntity, UserDTOResponse>().ForMember(dest => dest.Language, opt => opt.MapFrom(src => src.Language.IETF_LanguageTag)));
 
         public static TgUserService GetService()
         {

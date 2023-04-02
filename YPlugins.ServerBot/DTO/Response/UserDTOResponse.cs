@@ -9,7 +9,7 @@ namespace ServerBot.DTO
         public string LastName { get; set; }
         public string Email { get; set; }
         public string ComputerInformation { get; set; }
-        public LanguageDTOResponse Language { get; set; }
+        public string Language { get; set; }
 
         public IEnumerable<LicenseDTOResponse> Licenses { get; set; }
     }

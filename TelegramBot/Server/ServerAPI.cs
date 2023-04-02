@@ -10,13 +10,15 @@ namespace TelegramBot.Server
 {
     public class ServerAPI
     {
-        private const string serverAddress = "http://localhost:5007/";
-
+        private const string defaultServerAddress = "http://localhost:5007/";
+        private string serverAddress;
         private static ServerAPI instance;
         private static object SyncObject = new object();
         private ServerAPI()
         {
-
+            string? serverAddress_ = System.Environment.GetEnvironmentVariable("SERVER_ADRESS");
+            serverAddress_ ??= defaultServerAddress;
+            serverAddress = serverAddress_;
         }
 
         public static ServerAPI GetInstance
@@ -45,7 +47,7 @@ namespace TelegramBot.Server
         {
             PasswordDTO password = new PasswordDTO { Password = ConfigurationManager.AppSettings["Password"] };
             var response = await HTTP.GetInstance.POST(serverAddress + "User/jwtToken", password);
-            HTTP.SetJWTToken(response);
+            HTTP.SetJWTToken(response.Content.ToString());
             await Task.CompletedTask;
         }
 
