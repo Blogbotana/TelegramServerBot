@@ -253,6 +253,6 @@ paket-files/
 token.txt
 payment.txt
 server.txt
-YPlugins.ServerBot/ServerBot/Migrations/
+YPlugins.ServerBot/Migrations/
 App.config
 appsettings.json
